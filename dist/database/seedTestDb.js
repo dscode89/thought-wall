@@ -12,12 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const connection_1 = __importDefault(require("./database/connection"));
-const app = (0, express_1.default)();
-app.get("/api/users", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const usersCollection = connection_1.default.database.collection("Users");
-    const currentUsers = yield usersCollection.find().toArray();
-    res.status(200).send({ users: currentUsers });
-}));
-exports.default = app;
+const connection_1 = __importDefault(require("../database/connection"));
+const thoughts_1 = __importDefault(require("../database/test-data/thoughts"));
+const users_1 = __importDefault(require("../database/test-data/users"));
+function seedTestdatabase() {
+    return __awaiter(this, void 0, void 0, function* () {
+        //delete all current test documents in collections
+        yield connection_1.default.database.collection("Users").deleteMany({});
+        yield connection_1.default.database.collection("Thoughts").deleteMany({});
+        //insert test documents in collections
+        yield connection_1.default.database.collection("Users").insertMany(users_1.default);
+        yield connection_1.default.database.collection("Thoughts").insertMany(thoughts_1.default);
+    });
+}
+exports.default = seedTestdatabase;

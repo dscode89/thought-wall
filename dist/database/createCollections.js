@@ -26,6 +26,7 @@ function createCollections() {
         }
     });
 }
-createCollections().then(() => {
-    console.log("Successfully Created User and Thoughts collections");
-});
+exports.default = createCollections;
+// createCollections().then(() => {
+//   console.log("Successfully Created User and Thoughts collections");
+// });
