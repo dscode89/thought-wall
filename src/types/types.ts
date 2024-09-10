@@ -7,8 +7,7 @@ export interface User {
   email: string;
 }
 
-export interface Thoughts {
-  thoughtId: string;
+export interface Thought {
   thoughtMessage: string;
   category: "HOME" | "BILLS" | "GENERAL";
   isPriority: boolean;

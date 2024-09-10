@@ -43,3 +43,22 @@ describe("/api/users", () => {
         });
     });
 });
+describe("/api/thoughts", () => {
+    test("GET: 200 - will return object containing an list of thoughts", () => {
+        return (0, supertest_1.default)(app_1.default)
+            .get("/api/thoughts")
+            .expect(200)
+            .then(({ body }) => {
+            const thoughts = body.thoughts;
+            expect(thoughts.length).toBe(6);
+            thoughts.forEach((thought) => {
+                expect(thought).toEqual(expect.objectContaining({
+                    _id: expect.any(String),
+                    thoughtMessage: expect.any(String),
+                    category: expect.any(String),
+                    isPriority: expect.any(Boolean),
+                }));
+            });
+        });
+    });
+});

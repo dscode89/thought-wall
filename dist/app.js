@@ -16,8 +16,19 @@ const express_1 = __importDefault(require("express"));
 const connection_1 = __importDefault(require("./database/connection"));
 const app = (0, express_1.default)();
 app.get("/api/users", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    // get the Users collection from chosen database
     const usersCollection = connection_1.default.database.collection("Users");
+    // this will return a cluster object so use toArray() to give you an array of users
     const currentUsers = yield usersCollection.find().toArray();
+    //send it back
     res.status(200).send({ users: currentUsers });
+}));
+app.get("/api/thoughts", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    // get the Thoughts collection from chosen database
+    const thoughtsCollection = connection_1.default.database.collection("Thoughts");
+    // this will return a cluster object so use toArray() to give you an array of users
+    const currentThoughts = yield thoughtsCollection.find().toArray();
+    //send it back
+    res.status(200).send({ thoughts: currentThoughts });
 }));
 exports.default = app;
