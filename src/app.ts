@@ -1,24 +1,11 @@
 import express from "express";
 import dbInfo from "./database/connection";
 import { User, Thought } from "./types/types";
+import { getUsers } from "./controllers/usersController";
+import { getThoughts } from "./controllers/thoughtsController";
 const app = express();
 
-app.get("/api/users", async (req, res, next) => {
-  // get the Users collection from chosen database
-  const usersCollection = dbInfo.database.collection<User>("Users");
-  // this will return a cluster object so use toArray() to give you an array of users
-  const currentUsers = await usersCollection.find().toArray();
-  //send it back
-  res.status(200).send({ users: currentUsers });
-});
-
-app.get("/api/thoughts", async (req, res, next) => {
-  // get the Thoughts collection from chosen database
-  const thoughtsCollection = dbInfo.database.collection<Thought>("Thoughts");
-  // this will return a cluster object so use toArray() to give you an array of users
-  const currentThoughts = await thoughtsCollection.find().toArray();
-  //send it back
-  res.status(200).send({ thoughts: currentThoughts });
-});
+app.get("/api/users", getUsers);
+app.get("/api/thoughts", getThoughts);
 
 export default app;
