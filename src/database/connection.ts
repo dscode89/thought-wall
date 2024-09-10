@@ -6,7 +6,7 @@ const ENV: string = process.env.NODE_ENV || "dev";
 config({ path: __dirname + `/../../.env.${ENV}` }); // load environment variables
 
 const connectionString = process.env.CONNECTION_STRING;
-
+// connect to either local mongoDb database or atlas cluster
 const client = new MongoClient(connectionString!, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -14,7 +14,7 @@ const client = new MongoClient(connectionString!, {
     deprecationErrors: true,
   },
 });
-
+// function to connect to the test of dev database
 function createDatabaseConnection() {
   client.connect();
   const db = client.db(process.env.DATABASE_NAME);
