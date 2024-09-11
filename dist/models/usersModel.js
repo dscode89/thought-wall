@@ -8,16 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchUsers = void 0;
-const dbIndex_1 = __importDefault(require("../database/dbIndex"));
-const fetchUsers = () => __awaiter(void 0, void 0, void 0, function* () {
-    const currentDbInfo = yield (0, dbIndex_1.default)();
+const fetchUsers = (db) => __awaiter(void 0, void 0, void 0, function* () {
     // get the Users collection from chosen database
-    const usersCollection = currentDbInfo.db.collection("Users");
+    const usersCollection = db.collection("Users");
     // this will return a cluster object so use toArray() to give you an array of users
     const currentUsers = yield usersCollection.find().toArray();
     return currentUsers;

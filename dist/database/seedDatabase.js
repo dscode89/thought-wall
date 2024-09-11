@@ -8,17 +8,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUsers = void 0;
-const usersModel_1 = require("../models/usersModel");
-const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const mongoDb = req.app.get("mongoDb");
-        const currentUsers = yield (0, usersModel_1.fetchUsers)(mongoDb);
-        res.status(200).send({ users: currentUsers });
-    }
-    catch (error) {
-        next(error);
-    }
-});
-exports.getUsers = getUsers;
+const thoughts_1 = __importDefault(require("./test-data/thoughts"));
+const users_1 = __importDefault(require("./test-data/users"));
+function seedDatabase(db) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield db.collection("Users").drop();
+        yield db.collection("Thoughts").drop();
+        yield db.createCollection("Users");
+        yield db.createCollection("Thoughts");
+        yield db.collection("Users").insertMany(users_1.default);
+        yield db.collection("Thoughts").insertMany(thoughts_1.default);
+    });
+}
+exports.default = seedDatabase;

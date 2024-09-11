@@ -1,20 +1,32 @@
-import seedTestDb from "../database/seedTestDb";
+import seedDatabase from "../database/seedDatabase";
 import request from "supertest";
 import app from "../app";
 import { User, Thought } from "../types/types";
-import dbInfo from "../database/createTestDb";
+import createDatabaseConnection from "../database/createDatabaseConnection";
+import { Db, MongoClient } from "mongodb";
+
+let testDb: Db;
+let testDbClient: MongoClient;
+
+beforeAll(async () => {
+  const { db, client } = await createDatabaseConnection();
+
+  testDb = db;
+  testDbClient = client;
+
+  app.set("mongoDb", testDb);
+});
 
 beforeEach(async () => {
-  await seedTestDb();
+  await seedDatabase(testDb);
 });
 
 afterAll(async () => {
-  const localDatabaseInfo = await dbInfo();
-  await localDatabaseInfo!.client.close();
+  await testDbClient.close();
 });
 
 describe("/api/users", () => {
-  test("GET: 200 - will return object containing an list of users", () => {
+  test("GET: 200 - will return object containing a list of users", () => {
     return request(app)
       .get("/api/users")
       .expect(200)

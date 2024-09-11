@@ -9,16 +9,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUsers = void 0;
-const usersModel_1 = require("../models/usersModel");
-const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const mongoDb = req.app.get("mongoDb");
-        const currentUsers = yield (0, usersModel_1.fetchUsers)(mongoDb);
-        res.status(200).send({ users: currentUsers });
-    }
-    catch (error) {
-        next(error);
-    }
-});
-exports.getUsers = getUsers;
+exports.default = createDatabaseConnection;
+const mongodb_1 = require("mongodb");
+const dotenv_1 = require("dotenv");
+(0, dotenv_1.config)();
+function createDatabaseConnection() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const dbConnectionString = process.env.NODE_ENV
+            ? process.env.CONNECTION_STRING_TEST
+            : process.env.CONNECTION_STRING;
+        const client = yield mongodb_1.MongoClient.connect(dbConnectionString);
+        const dbName = process.env.NODE_ENV
+            ? process.env.DATABASE_NAME_TEST
+            : process.env.DATABASE_NAME;
+        const db = client.db(dbName);
+        return { db, client };
+    });
+}

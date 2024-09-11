@@ -19,4 +19,5 @@ export default async function createLocalTestDatabase() {
   }
 }
 
-createLocalTestDatabase();
+
+// createLocalTestDatabase();

@@ -12,19 +12,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const seedTestDb_1 = __importDefault(require("../database/seedTestDb"));
+const seedDatabase_1 = __importDefault(require("../database/seedDatabase"));
 const supertest_1 = __importDefault(require("supertest"));
 const app_1 = __importDefault(require("../app"));
-const createTestDb_1 = __importDefault(require("../database/createTestDb"));
+const createDatabaseConnection_1 = __importDefault(require("../database/createDatabaseConnection"));
+let testDb;
+let testDbClient;
+beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+    const { db, client } = yield (0, createDatabaseConnection_1.default)();
+    testDb = db;
+    testDbClient = client;
+    app_1.default.set("mongoDb", testDb);
+}));
 beforeEach(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, seedTestDb_1.default)();
+    yield (0, seedDatabase_1.default)(testDb);
 }));
 afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
-    const localDatabaseInfo = yield (0, createTestDb_1.default)();
-    yield localDatabaseInfo.client.close();
+    yield testDbClient.close();
 }));
 describe("/api/users", () => {
-    test("GET: 200 - will return object containing an list of users", () => {
+    test("GET: 200 - will return object containing a list of users", () => {
         return (0, supertest_1.default)(app_1.default)
             .get("/api/users")
             .expect(200)

@@ -12,7 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getThoughts = void 0;
 const thoughtsModel_1 = require("../models/thoughtsModel");
 const getThoughts = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const currentThoughts = yield (0, thoughtsModel_1.fetchThoughts)();
+    const mongoDb = req.app.get("mongoDb");
+    const currentThoughts = yield (0, thoughtsModel_1.fetchThoughts)(mongoDb);
     res.status(200).send({ thoughts: currentThoughts });
 });
 exports.getThoughts = getThoughts;

@@ -27,4 +27,4 @@ function createLocalTestDatabase() {
         }
     });
 }
-createLocalTestDatabase();
+// createLocalTestDatabase();
