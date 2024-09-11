@@ -1,4 +1,4 @@
-import seedDatabase from "../database/seedDatabase";
+import seedTestDatabase from "../database/seedDatabase";
 import request from "supertest";
 import app from "../app";
 import { User, Thought } from "../types/types";
@@ -18,7 +18,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await seedDatabase(testDb);
+  await seedTestDatabase(testDb);
 });
 
 afterAll(async () => {

@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const thoughts_1 = __importDefault(require("./test-data/thoughts"));
 const users_1 = __importDefault(require("./test-data/users"));
-function seedDatabase(db) {
+function seedTestDatabase(db) {
     return __awaiter(this, void 0, void 0, function* () {
         yield db.collection("Users").drop();
         yield db.collection("Thoughts").drop();
@@ -24,4 +24,4 @@ function seedDatabase(db) {
         yield db.collection("Thoughts").insertMany(thoughts_1.default);
     });
 }
-exports.default = seedDatabase;
+exports.default = seedTestDatabase;
