@@ -2,14 +2,15 @@ import seedTestDb from "../database/seedTestDb";
 import request from "supertest";
 import app from "../app";
 import { User, Thought } from "../types/types";
-import dbInfo from "../database/connection";
+import dbInfo from "../database/createTestDb";
 
 beforeEach(async () => {
   await seedTestDb();
 });
 
-afterAll(() => {
-  dbInfo.client.close();
+afterAll(async () => {
+  const localDatabaseInfo = await dbInfo();
+  await localDatabaseInfo!.client.close();
 });
 
 describe("/api/users", () => {

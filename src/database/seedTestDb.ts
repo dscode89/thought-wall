@@ -1,15 +1,17 @@
-import dbInfo from "../database/connection";
+import dbInfo from "./createTestDb";
 import thoughts from "../database/test-data/thoughts";
 import users from "../database/test-data/users";
 
 async function seedTestdatabase() {
+  const localDatabaseInfo = await dbInfo();
+  const localDatabase = localDatabaseInfo?.db;
   //delete all current test documents in collections
-  await dbInfo.database.collection("Users").deleteMany({});
-  await dbInfo.database.collection("Thoughts").deleteMany({});
+  await localDatabase?.collection("Users").deleteMany({});
+  await localDatabase?.collection("Thoughts").deleteMany({});
 
   //insert test documents in collections
-  await dbInfo.database.collection("Users").insertMany(users);
-  await dbInfo.database.collection("Thoughts").insertMany(thoughts);
+  await localDatabase?.collection("Users").insertMany(users);
+  await localDatabase?.collection("Thoughts").insertMany(thoughts);
 }
 
 export default seedTestdatabase;

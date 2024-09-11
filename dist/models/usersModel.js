@@ -13,10 +13,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchUsers = void 0;
-const connection_1 = __importDefault(require("../database/connection"));
+const dbIndex_1 = __importDefault(require("../database/dbIndex"));
 const fetchUsers = () => __awaiter(void 0, void 0, void 0, function* () {
+    const currentDbInfo = yield (0, dbIndex_1.default)();
     // get the Users collection from chosen database
-    const usersCollection = connection_1.default.database.collection("Users");
+    const usersCollection = currentDbInfo.db.collection("Users");
     // this will return a cluster object so use toArray() to give you an array of users
     const currentUsers = yield usersCollection.find().toArray();
     return currentUsers;

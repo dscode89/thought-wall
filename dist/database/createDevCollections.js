@@ -12,14 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchThoughts = void 0;
-const dbIndex_1 = __importDefault(require("../database/dbIndex"));
-const fetchThoughts = () => __awaiter(void 0, void 0, void 0, function* () {
-    const currentDbInfo = yield (0, dbIndex_1.default)();
-    // get the Thoughts collection from chosen database
-    const thoughtsCollection = currentDbInfo.db.collection("Thoughts");
-    // this will return a cluster object so use toArray() to give you an array of thoughts
-    const currentThoughts = yield thoughtsCollection.find().toArray();
-    return currentThoughts;
+const connection_1 = __importDefault(require("../database/connection"));
+function createDevCollections() {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield connection_1.default.createDatabaseCollections();
+        connection_1.default.client.close();
+    });
+}
+createDevCollections()
+    .then(() => {
+    console.log("Successfully created dev collections");
+})
+    .catch((err) => {
+    console.error();
 });
-exports.fetchThoughts = fetchThoughts;

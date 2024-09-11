@@ -15,13 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const seedTestDb_1 = __importDefault(require("../database/seedTestDb"));
 const supertest_1 = __importDefault(require("supertest"));
 const app_1 = __importDefault(require("../app"));
-const connection_1 = __importDefault(require("../database/connection"));
+const createTestDb_1 = __importDefault(require("../database/createTestDb"));
 beforeEach(() => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, seedTestDb_1.default)();
 }));
-afterAll(() => {
-    connection_1.default.client.close();
-});
+afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
+    const localDatabaseInfo = yield (0, createTestDb_1.default)();
+    yield localDatabaseInfo.client.close();
+}));
 describe("/api/users", () => {
     test("GET: 200 - will return object containing an list of users", () => {
         return (0, supertest_1.default)(app_1.default)

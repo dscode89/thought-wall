@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "seed-test-db": "tsc && node ./dist/database/seedTestDb.js",
-    "test-app": "tsc && npm test ./dist/tests/app.test.js",
-    "test": "jest"
+    "create-test-collections": "node ./dist/database/createTestDb.js",
+    "create-dev-collections": "node ./dist/database/createDevDb.js",
+    "create-collections": "npm run create-test-collections & npm run create-dev-collections",
+    "test": "jest --detectOpenHandles"
   },
   "keywords": [],
   "author": "",

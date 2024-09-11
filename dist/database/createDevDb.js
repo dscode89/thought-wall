@@ -9,34 +9,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = createDevCollections;
 const mongodb_1 = require("mongodb");
 const dotenv_1 = require("dotenv");
-const ENV = process.env.NODE_ENV || "dev";
-(0, dotenv_1.config)({ path: __dirname + `/../../.env.${ENV}` }); // load environment variables
-const connectionString = process.env.CONNECTION_STRING;
-// connect to either local mongoDb database or atlas cluster
-const client = new mongodb_1.MongoClient(connectionString, {
-    serverApi: {
-        version: mongodb_1.ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-    },
-});
-// function to connect to the test of dev database
-function createDatabaseCollections() {
+(0, dotenv_1.config)(); // read environment variables
+function createDevCollections() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield client.connect();
-        const db = client.db(process.env.DATABASE_NAME);
-        // if not in test environment - just create the collections without documents
-        if (ENV === "dev") {
-            console.log("in here");
+        try {
+            const client = yield mongodb_1.MongoClient.connect(process.env.CONNECTION_STRING, {
+                serverApi: {
+                    version: mongodb_1.ServerApiVersion.v1,
+                    strict: true,
+                    deprecationErrors: true,
+                },
+            });
+            const db = client.db(process.env.DATABASE_NAME);
             yield db.createCollection("Users");
             yield db.createCollection("Thoughts");
+            return { db, client };
         }
-        return db;
+        catch (error) {
+            console.error(error);
+        }
     });
 }
-exports.default = {
-    createDatabaseCollections,
-    client,
-};
+createDevCollections();

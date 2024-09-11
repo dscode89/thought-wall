@@ -8,18 +8,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchThoughts = void 0;
-const dbIndex_1 = __importDefault(require("../database/dbIndex"));
-const fetchThoughts = () => __awaiter(void 0, void 0, void 0, function* () {
-    const currentDbInfo = yield (0, dbIndex_1.default)();
-    // get the Thoughts collection from chosen database
-    const thoughtsCollection = currentDbInfo.db.collection("Thoughts");
-    // this will return a cluster object so use toArray() to give you an array of thoughts
-    const currentThoughts = yield thoughtsCollection.find().toArray();
-    return currentThoughts;
-});
-exports.fetchThoughts = fetchThoughts;
+exports.default = createLocalTestDatabase;
+const mongodb_1 = require("mongodb");
+const dotenv_1 = require("dotenv");
+(0, dotenv_1.config)(); // read environment variables
+function createLocalTestDatabase() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const client = yield mongodb_1.MongoClient.connect(process.env.CONNECTION_STRING_TEST);
+            const db = client.db(process.env.DATABASE_NAME_TEST);
+            yield db.createCollection("Users");
+            yield db.createCollection("Thoughts");
+            return { db, client };
+        }
+        catch (error) {
+            console.error(error);
+        }
+    });
+}
+createLocalTestDatabase();
