@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchUsers = void 0;
+exports.createUser = exports.fetchUsers = void 0;
 const fetchUsers = (db) => __awaiter(void 0, void 0, void 0, function* () {
     // get the Users collection from chosen database
     const usersCollection = db.collection("Users");
@@ -18,3 +18,12 @@ const fetchUsers = (db) => __awaiter(void 0, void 0, void 0, function* () {
     return currentUsers;
 });
 exports.fetchUsers = fetchUsers;
+const createUser = (db, user) => __awaiter(void 0, void 0, void 0, function* () {
+    // get the Users collection from chosen database
+    const usersCollection = db.collection("Users");
+    // this will return a cluster object so use toArray() to give you an array of users
+    const { insertedId } = yield usersCollection.insertOne(user);
+    const newUser = yield usersCollection.findOne({ _id: insertedId });
+    return newUser;
+});
+exports.createUser = createUser;

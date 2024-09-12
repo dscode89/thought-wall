@@ -16,6 +16,7 @@ const seedDatabase_1 = __importDefault(require("../database/seedDatabase"));
 const supertest_1 = __importDefault(require("supertest"));
 const app_1 = __importDefault(require("../app"));
 const createDatabaseConnection_1 = __importDefault(require("../database/createDatabaseConnection"));
+const usersModel_1 = require("../models/usersModel");
 let testDb;
 let testDbClient;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
@@ -48,6 +49,34 @@ describe("/api/users", () => {
                     userPassword: expect.any(String),
                 }));
             });
+        });
+    });
+    test("POST: 201 - will return a posted user document", () => {
+        return (0, supertest_1.default)(app_1.default)
+            .post("/api/users")
+            .expect(201)
+            .send({
+            firstName: "Ashlyn",
+            lastName: "Lovatt",
+            preferredName: "Ash",
+            role: "ADMIN",
+            userPassword: "securepass458",
+            email: "no@cheese.com",
+        })
+            .then(({ body }) => {
+            const user = body.user;
+            expect(user).toMatchObject({
+                firstName: "Ashlyn",
+                lastName: "Lovatt",
+                preferredName: "Ash",
+                role: "ADMIN",
+                userPassword: "securepass458",
+                email: "no@cheese.com",
+            });
+            return (0, usersModel_1.fetchUsers)(testDb);
+        })
+            .then((users) => {
+            expect(users.length).toBe(6);
         });
     });
 });

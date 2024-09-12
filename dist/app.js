@@ -7,6 +7,10 @@ const express_1 = __importDefault(require("express"));
 const usersController_1 = require("./controllers/usersController");
 const thoughtsController_1 = require("./controllers/thoughtsController");
 const app = (0, express_1.default)();
+app.use(express_1.default.json());
+//users
 app.get("/api/users", usersController_1.getUsers);
+app.post("/api/users", usersController_1.postUser);
+//thoughts
 app.get("/api/thoughts", thoughtsController_1.getThoughts);
 exports.default = app;

@@ -4,6 +4,7 @@ import app from "../app";
 import { User, Thought } from "../types/types";
 import createDatabaseConnection from "../database/createDatabaseConnection";
 import { Db, MongoClient } from "mongodb";
+import { fetchUsers } from "../models/usersModel";
 
 let testDb: Db;
 let testDbClient: MongoClient;
@@ -45,6 +46,35 @@ describe("/api/users", () => {
             })
           );
         });
+      });
+  });
+  test("POST: 201 - will return a posted user document", () => {
+    return request(app)
+      .post("/api/users")
+      .expect(201)
+      .send({
+        firstName: "Ashlyn",
+        lastName: "Lovatt",
+        preferredName: "Ash",
+        role: "ADMIN",
+        userPassword: "securepass458",
+        email: "no@cheese.com",
+      })
+      .then(({ body }) => {
+        const user = body.user;
+        expect(user).toMatchObject({
+          firstName: "Ashlyn",
+          lastName: "Lovatt",
+          preferredName: "Ash",
+          role: "ADMIN",
+          userPassword: "securepass458",
+          email: "no@cheese.com",
+        });
+
+        return fetchUsers(testDb);
+      })
+      .then((users) => {
+        expect(users.length).toBe(6);
       });
   });
 });

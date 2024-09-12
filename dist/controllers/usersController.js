@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUsers = void 0;
+exports.postUser = exports.getUsers = void 0;
 const usersModel_1 = require("../models/usersModel");
 const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -22,3 +22,14 @@ const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getUsers = getUsers;
+const postUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const mongoDb = req.app.get("mongoDb");
+        const newUser = yield (0, usersModel_1.createUser)(mongoDb, req.body);
+        res.status(201).send({ user: newUser });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.postUser = postUser;
