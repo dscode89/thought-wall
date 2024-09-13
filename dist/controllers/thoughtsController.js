@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postThought = exports.getThoughts = void 0;
+exports.deleteThoughtsByUserId = exports.deleteThought = exports.postThought = exports.getThoughts = void 0;
 const thoughtsModel_1 = require("../models/thoughtsModel");
 const mongodb_1 = require("mongodb");
 const getThoughts = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -32,3 +32,27 @@ const postThought = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.postThought = postThought;
+const deleteThought = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const thoughtId = req.params.thought_id;
+        const mongoDb = req.app.get("mongoDb");
+        yield (0, thoughtsModel_1.removeThought)(mongoDb, thoughtId);
+        res.status(204).send();
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.deleteThought = deleteThought;
+const deleteThoughtsByUserId = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.params.user_id;
+        const mongoDb = req.app.get("mongoDb");
+        yield (0, thoughtsModel_1.removeThoughtsByUserId)(mongoDb, userId);
+        res.status(204).send();
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.deleteThoughtsByUserId = deleteThoughtsByUserId;

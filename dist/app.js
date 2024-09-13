@@ -15,4 +15,6 @@ app.delete("/api/users/:user_id", usersController_1.deleteUser);
 //thoughts
 app.get("/api/thoughts", thoughtsController_1.getThoughts);
 app.post("/api/thoughts", thoughtsController_1.postThought);
+app.delete("/api/thoughts/:thought_id", thoughtsController_1.deleteThought);
+app.delete("/api/thoughts/users/:user_id", thoughtsController_1.deleteThoughtsByUserId);
 exports.default = app;

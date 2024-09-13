@@ -143,4 +143,34 @@ describe("/api/thoughts", () => {
         expect(thoughts.length).toBe(7);
       });
   });
+  test("DELETE: 204 - will delete a thought document from Thoughts collection", async () => {
+    const thoughts = await fetchThoughts(testDb);
+    const testThoughtId = thoughts[0]["_id"];
+
+    return request(app)
+      .delete("/api/thoughts/" + testThoughtId)
+      .expect(204)
+      .then(() => {
+        return fetchThoughts(testDb);
+      })
+
+      .then((users) => {
+        expect(users.length).toBe(5);
+      });
+  });
+  test("DELETE: 204 - will delete all thought documents but a specific user from Thoughts collection", async () => {
+    const thoughts = await fetchUsers(testDb);
+    const testUserId = thoughts[0]["_id"];
+
+    return request(app)
+      .delete("/api/thoughts/users/" + testUserId)
+      .expect(204)
+      .then(() => {
+        return fetchThoughts(testDb);
+      })
+
+      .then((users) => {
+        expect(users.length).toBe(3);
+      });
+  });
 });

@@ -9,7 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createThought = exports.fetchThoughts = void 0;
+exports.removeThoughtsByUserId = exports.removeThought = exports.createThought = exports.fetchThoughts = void 0;
+const mongodb_1 = require("mongodb");
 const fetchThoughts = (db) => __awaiter(void 0, void 0, void 0, function* () {
     const thoughtsCollection = db.collection("Thoughts");
     const currentThoughts = yield thoughtsCollection.find().toArray();
@@ -23,3 +24,17 @@ const createThought = (db, thought) => __awaiter(void 0, void 0, void 0, functio
     return newThought;
 });
 exports.createThought = createThought;
+const removeThought = (db, id) => __awaiter(void 0, void 0, void 0, function* () {
+    const thoughtsCollection = db.collection("Thoughts");
+    yield thoughtsCollection.deleteOne({
+        _id: new mongodb_1.ObjectId(id),
+    });
+});
+exports.removeThought = removeThought;
+const removeThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, function* () {
+    const thoughtsCollection = db.collection("Thoughts");
+    yield thoughtsCollection.deleteMany({
+        _userId: new mongodb_1.ObjectId(id),
+    });
+});
+exports.removeThoughtsByUserId = removeThoughtsByUserId;

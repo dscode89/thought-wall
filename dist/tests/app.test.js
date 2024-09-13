@@ -138,4 +138,30 @@ describe("/api/thoughts", () => {
             expect(thoughts.length).toBe(7);
         });
     }));
+    test("DELETE: 204 - will delete a thought document from Thoughts collection", () => __awaiter(void 0, void 0, void 0, function* () {
+        const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
+        const testThoughtId = thoughts[0]["_id"];
+        return (0, supertest_1.default)(app_1.default)
+            .delete("/api/thoughts/" + testThoughtId)
+            .expect(204)
+            .then(() => {
+            return (0, thoughtsModel_1.fetchThoughts)(testDb);
+        })
+            .then((users) => {
+            expect(users.length).toBe(5);
+        });
+    }));
+    test("DELETE: 204 - will delete all thought documents but a specific user from Thoughts collection", () => __awaiter(void 0, void 0, void 0, function* () {
+        const thoughts = yield (0, usersModel_1.fetchUsers)(testDb);
+        const testUserId = thoughts[0]["_id"];
+        return (0, supertest_1.default)(app_1.default)
+            .delete("/api/thoughts/users/" + testUserId)
+            .expect(204)
+            .then(() => {
+            return (0, thoughtsModel_1.fetchThoughts)(testDb);
+        })
+            .then((users) => {
+            expect(users.length).toBe(3);
+        });
+    }));
 });

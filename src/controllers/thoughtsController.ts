@@ -1,5 +1,10 @@
 import { NextFunction, RequestHandler, Response, Request } from "express";
-import { fetchThoughts, createThought } from "../models/thoughtsModel";
+import {
+  fetchThoughts,
+  createThought,
+  removeThought,
+  removeThoughtsByUserId,
+} from "../models/thoughtsModel";
 import { Db, ObjectId } from "mongodb";
 
 export const getThoughts: RequestHandler = async (
@@ -26,6 +31,38 @@ export const postThought: RequestHandler = async (
     const mongoDb: Db = req.app.get("mongoDb");
     const newThought = await createThought(mongoDb, req.body);
     res.status(201).send({ thought: newThought });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteThought: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const thoughtId = req.params.thought_id;
+    const mongoDb: Db = req.app.get("mongoDb");
+    await removeThought(mongoDb, thoughtId);
+
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteThoughtsByUserId: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.params.user_id;
+    const mongoDb: Db = req.app.get("mongoDb");
+    await removeThoughtsByUserId(mongoDb, userId);
+
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
