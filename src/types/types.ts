@@ -1,5 +1,4 @@
-import { NextFunction } from "express";
-import { Db } from "mongodb";
+import { ObjectId } from "mongodb";
 
 export interface User {
   firstName: string;
@@ -11,6 +10,7 @@ export interface User {
 }
 
 export interface Thought {
+  _userId: ObjectId;
   thoughtMessage: string;
   category: "HOME" | "BILLS" | "GENERAL";
   isPriority: boolean;

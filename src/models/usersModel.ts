@@ -1,4 +1,4 @@
-import { Db } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { User } from "../types/types";
 
 export const fetchUsers = async (db: Db) => {
@@ -18,4 +18,11 @@ export const createUser = async (db: Db, user: User) => {
   const newUser = await usersCollection.findOne({ _id: insertedId });
 
   return newUser;
+};
+
+export const removeUser = async (db: Db, id: string) => {
+  const usersCollection = db.collection<User>("Users");
+  await usersCollection.deleteOne({
+    _id: new ObjectId(id),
+  });
 };

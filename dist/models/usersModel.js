@@ -9,7 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUser = exports.fetchUsers = void 0;
+exports.removeUser = exports.createUser = exports.fetchUsers = void 0;
+const mongodb_1 = require("mongodb");
 const fetchUsers = (db) => __awaiter(void 0, void 0, void 0, function* () {
     // get the Users collection from chosen database
     const usersCollection = db.collection("Users");
@@ -27,3 +28,10 @@ const createUser = (db, user) => __awaiter(void 0, void 0, void 0, function* () 
     return newUser;
 });
 exports.createUser = createUser;
+const removeUser = (db, id) => __awaiter(void 0, void 0, void 0, function* () {
+    const usersCollection = db.collection("Users");
+    yield usersCollection.deleteOne({
+        _id: new mongodb_1.ObjectId(id),
+    });
+});
+exports.removeUser = removeUser;

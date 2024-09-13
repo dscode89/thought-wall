@@ -21,6 +21,17 @@ function seedTestDatabase(db) {
         yield db.createCollection("Users");
         yield db.createCollection("Thoughts");
         yield db.collection("Users").insertMany(users_1.default);
+        const instertedUsers = yield db.collection("Users").find().toArray();
+        const firstUserId = instertedUsers[0]["_id"];
+        const secondUserId = instertedUsers[1]["_id"];
+        thoughts_1.default.forEach((thought, i) => {
+            if (i % 2 === 0) {
+                thought._userId = firstUserId;
+            }
+            else {
+                thought._userId = secondUserId;
+            }
+        });
         yield db.collection("Thoughts").insertMany(thoughts_1.default);
     });
 }

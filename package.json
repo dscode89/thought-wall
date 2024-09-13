@@ -3,10 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "create-test-collections": "node ./dist/database/createTestDb.js",
-    "create-dev-collections": "node ./dist/database/createDevDb.js",
-    "create-collections": "npm run create-test-collections & npm run create-dev-collections",
-    "test": "jest "
+    "test": "jest",
+    "test-endpoints": "npm test app.test.js"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +22,7 @@
     "@types/jest": "^29.5.12",
     "@types/node": "^22.5.4",
     "@types/supertest": "^6.0.2",
-    "supertest": "^7.0.0",
-    "ts-jest": "^29.2.5"
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }

@@ -3,8 +3,9 @@ import request from "supertest";
 import app from "../app";
 import { User, Thought } from "../types/types";
 import createDatabaseConnection from "../database/createDatabaseConnection";
-import { Db, MongoClient } from "mongodb";
+import { Db, MongoClient, ObjectId } from "mongodb";
 import { fetchUsers } from "../models/usersModel";
+import { fetchThoughts } from "../models/thoughtsModel";
 
 let testDb: Db;
 let testDbClient: MongoClient;
@@ -77,6 +78,21 @@ describe("/api/users", () => {
         expect(users.length).toBe(6);
       });
   });
+  test("DELETE:204 - will delete a user document from Users collection", async () => {
+    const users = await fetchUsers(testDb);
+    const testUserId = users[0]["_id"];
+
+    return request(app)
+      .delete("/api/users/" + testUserId)
+      .expect(204)
+      .then(() => {
+        return fetchUsers(testDb);
+      })
+
+      .then((users) => {
+        expect(users.length).toBe(4);
+      });
+  });
 });
 
 describe("/api/thoughts", () => {
@@ -97,6 +113,34 @@ describe("/api/thoughts", () => {
             })
           );
         });
+      });
+  });
+  test("POST: 201 - will return a posted thought document", async () => {
+    const users = await fetchUsers(testDb);
+    const testUserId = users[0]["_id"];
+
+    return request(app)
+      .post("/api/thoughts")
+      .expect(201)
+      .send({
+        _userId: testUserId.toHexString(),
+        category: "BILLS",
+        isPriority: false,
+        thoughtMessage: "I need to pay my billy bills",
+      })
+      .then(({ body }) => {
+        expect(body.thought).toMatchObject({
+          _userId: testUserId.toHexString(),
+          category: "BILLS",
+          isPriority: false,
+          thoughtMessage: "I need to pay my billy bills",
+        });
+
+        return fetchThoughts(testDb);
+      })
+      .then((thoughts) => {
+        thoughts[6], "<-- in database";
+        expect(thoughts.length).toBe(7);
       });
   });
 });

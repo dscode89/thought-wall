@@ -9,12 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchThoughts = void 0;
+exports.createThought = exports.fetchThoughts = void 0;
 const fetchThoughts = (db) => __awaiter(void 0, void 0, void 0, function* () {
-    // get the Thoughts collection from chosen database
     const thoughtsCollection = db.collection("Thoughts");
-    // this will return a cluster object so use toArray() to give you an array of thoughts
     const currentThoughts = yield thoughtsCollection.find().toArray();
     return currentThoughts;
 });
 exports.fetchThoughts = fetchThoughts;
+const createThought = (db, thought) => __awaiter(void 0, void 0, void 0, function* () {
+    const thoughtsCollection = db.collection("Thoughts");
+    const { insertedId } = yield thoughtsCollection.insertOne(thought);
+    const newThought = yield thoughtsCollection.findOne({ _id: insertedId });
+    return newThought;
+});
+exports.createThought = createThought;

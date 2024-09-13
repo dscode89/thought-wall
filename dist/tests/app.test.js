@@ -17,6 +17,7 @@ const supertest_1 = __importDefault(require("supertest"));
 const app_1 = __importDefault(require("../app"));
 const createDatabaseConnection_1 = __importDefault(require("../database/createDatabaseConnection"));
 const usersModel_1 = require("../models/usersModel");
+const thoughtsModel_1 = require("../models/thoughtsModel");
 let testDb;
 let testDbClient;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
@@ -79,6 +80,19 @@ describe("/api/users", () => {
             expect(users.length).toBe(6);
         });
     });
+    test("DELETE:204 - will delete a user document from Users collection", () => __awaiter(void 0, void 0, void 0, function* () {
+        const users = yield (0, usersModel_1.fetchUsers)(testDb);
+        const testUserId = users[0]["_id"];
+        return (0, supertest_1.default)(app_1.default)
+            .delete("/api/users/" + testUserId)
+            .expect(204)
+            .then(() => {
+            return (0, usersModel_1.fetchUsers)(testDb);
+        })
+            .then((users) => {
+            expect(users.length).toBe(4);
+        });
+    }));
 });
 describe("/api/thoughts", () => {
     test("GET: 200 - will return object containing an list of thoughts", () => {
@@ -98,4 +112,30 @@ describe("/api/thoughts", () => {
             });
         });
     });
+    test("POST: 201 - will return a posted thought document", () => __awaiter(void 0, void 0, void 0, function* () {
+        const users = yield (0, usersModel_1.fetchUsers)(testDb);
+        const testUserId = users[0]["_id"];
+        return (0, supertest_1.default)(app_1.default)
+            .post("/api/thoughts")
+            .expect(201)
+            .send({
+            _userId: testUserId.toHexString(),
+            category: "BILLS",
+            isPriority: false,
+            thoughtMessage: "I need to pay my billy bills",
+        })
+            .then(({ body }) => {
+            expect(body.thought).toMatchObject({
+                _userId: testUserId.toHexString(),
+                category: "BILLS",
+                isPriority: false,
+                thoughtMessage: "I need to pay my billy bills",
+            });
+            return (0, thoughtsModel_1.fetchThoughts)(testDb);
+        })
+            .then((thoughts) => {
+            thoughts[6], "<-- in database";
+            expect(thoughts.length).toBe(7);
+        });
+    }));
 });

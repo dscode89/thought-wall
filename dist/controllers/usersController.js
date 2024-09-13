@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postUser = exports.getUsers = void 0;
+exports.deleteUser = exports.postUser = exports.getUsers = void 0;
 const usersModel_1 = require("../models/usersModel");
 const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -33,3 +33,15 @@ const postUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.postUser = postUser;
+const deleteUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.params.user_id;
+        const mongoDb = req.app.get("mongoDb");
+        yield (0, usersModel_1.removeUser)(mongoDb, userId);
+        res.status(204).send();
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.deleteUser = deleteUser;
