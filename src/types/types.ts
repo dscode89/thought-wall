@@ -15,3 +15,9 @@ export interface Thought {
   category: "HOME" | "BILLS" | "GENERAL";
   isPriority: boolean;
 }
+
+export interface PatchObjType {
+  thoughtMessage?: string;
+  isPriority?: boolean;
+  category?: "BILLS" | "GENERAL" | "HOME";
+}

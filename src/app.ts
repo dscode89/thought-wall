@@ -5,6 +5,7 @@ import {
   postThought,
   deleteThought,
   deleteThoughtsByUserId,
+  updateThoughtDetails,
 } from "./controllers/thoughtsController";
 
 const app = express();
@@ -20,5 +21,6 @@ app.get("/api/thoughts", getThoughts);
 app.post("/api/thoughts", postThought);
 app.delete("/api/thoughts/:thought_id", deleteThought);
 app.delete("/api/thoughts/users/:user_id", deleteThoughtsByUserId);
+app.patch("/api/thoughts/:thought_id", updateThoughtDetails);
 
 export default app;

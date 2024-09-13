@@ -17,4 +17,5 @@ app.get("/api/thoughts", thoughtsController_1.getThoughts);
 app.post("/api/thoughts", thoughtsController_1.postThought);
 app.delete("/api/thoughts/:thought_id", thoughtsController_1.deleteThought);
 app.delete("/api/thoughts/users/:user_id", thoughtsController_1.deleteThoughtsByUserId);
+app.patch("/api/thoughts/:thought_id", thoughtsController_1.updateThoughtDetails);
 exports.default = app;

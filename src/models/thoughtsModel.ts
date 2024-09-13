@@ -1,5 +1,5 @@
 import { Db, ObjectId } from "mongodb";
-import { Thought } from "../types/types";
+import { Thought, PatchObjType } from "../types/types";
 
 export const fetchThoughts = async (db: Db) => {
   const thoughtsCollection = db.collection<Thought>("Thoughts");
@@ -28,4 +28,19 @@ export const removeThoughtsByUserId = async (db: Db, id: string) => {
   await thoughtsCollection.deleteMany({
     _userId: new ObjectId(id),
   });
+};
+
+export const amendThoughtDetails = async (
+  db: Db,
+  id: string,
+  updateDatails: PatchObjType
+) => {
+  const thoughtsCollection = db.collection<Thought>("Thoughts");
+  const updatedThought = await thoughtsCollection.findOneAndUpdate(
+    { _id: new ObjectId(id) },
+    { $set: { ...updateDatails } },
+    { returnDocument: "after" }
+  );
+
+  return updatedThought;
 };

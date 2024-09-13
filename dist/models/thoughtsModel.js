@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeThoughtsByUserId = exports.removeThought = exports.createThought = exports.fetchThoughts = void 0;
+exports.amendThoughtDetails = exports.removeThoughtsByUserId = exports.removeThought = exports.createThought = exports.fetchThoughts = void 0;
 const mongodb_1 = require("mongodb");
 const fetchThoughts = (db) => __awaiter(void 0, void 0, void 0, function* () {
     const thoughtsCollection = db.collection("Thoughts");
@@ -38,3 +38,9 @@ const removeThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, fun
     });
 });
 exports.removeThoughtsByUserId = removeThoughtsByUserId;
+const amendThoughtDetails = (db, id, updateDatails) => __awaiter(void 0, void 0, void 0, function* () {
+    const thoughtsCollection = db.collection("Thoughts");
+    const updatedThought = yield thoughtsCollection.findOneAndUpdate({ _id: new mongodb_1.ObjectId(id) }, { $set: Object.assign({}, updateDatails) }, { returnDocument: "after" });
+    return updatedThought;
+});
+exports.amendThoughtDetails = amendThoughtDetails;

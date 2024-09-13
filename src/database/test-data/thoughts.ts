@@ -23,19 +23,19 @@ export default [
     _userId: new ObjectId(generateHexString(24)),
     thoughtMessage: "Buy groceries for the week.",
     category: "GENERAL",
-    isPriority: false,
+    isPriority: true,
   },
   {
     _userId: new ObjectId(generateHexString(24)),
     thoughtMessage: "Schedule the internet service upgrade.",
     category: "BILLS",
-    isPriority: false,
+    isPriority: true,
   },
   {
     _userId: new ObjectId(generateHexString(24)),
     thoughtMessage: "Clean the garage this weekend.",
     category: "HOME",
-    isPriority: false,
+    isPriority: true,
   },
   {
     _userId: new ObjectId(generateHexString(24)),

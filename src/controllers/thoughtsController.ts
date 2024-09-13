@@ -4,8 +4,10 @@ import {
   createThought,
   removeThought,
   removeThoughtsByUserId,
+  amendThoughtDetails,
 } from "../models/thoughtsModel";
 import { Db, ObjectId } from "mongodb";
+import { PatchObjType } from "../types/types";
 
 export const getThoughts: RequestHandler = async (
   req: Request,
@@ -63,6 +65,28 @@ export const deleteThoughtsByUserId: RequestHandler = async (
     await removeThoughtsByUserId(mongoDb, userId);
 
     res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateThoughtDetails: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const thoughtId = req.params.thought_id;
+    const updateDatails = req.body;
+
+    const mongoDb: Db = req.app.get("mongoDb");
+    const updatedThought = await amendThoughtDetails(
+      mongoDb,
+      thoughtId,
+      updateDatails
+    );
+
+    res.status(200).send({ thought: updatedThought });
   } catch (error) {
     next(error);
   }

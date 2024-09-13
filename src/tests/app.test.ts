@@ -28,149 +28,242 @@ afterAll(async () => {
 });
 
 describe("/api/users", () => {
-  test("GET: 200 - will return object containing a list of users", () => {
-    return request(app)
-      .get("/api/users")
-      .expect(200)
-      .then(({ body }) => {
-        const users = body.users;
-        expect(users.length).toBe(5);
-        users.forEach((user: User) => {
-          expect(user).toEqual(
-            expect.objectContaining({
-              _id: expect.any(String),
-              firstName: expect.any(String),
-              lastName: expect.any(String),
-              preferredName: expect.any(String),
-              role: expect.any(String),
-              userPassword: expect.any(String),
-            })
-          );
+  describe("GET", () => {
+    test("GET: 200 - will return object containing a list of users", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          const users = body.users;
+          expect(users.length).toBe(5);
+          users.forEach((user: User) => {
+            expect(user).toEqual(
+              expect.objectContaining({
+                _id: expect.any(String),
+                firstName: expect.any(String),
+                lastName: expect.any(String),
+                preferredName: expect.any(String),
+                role: expect.any(String),
+                userPassword: expect.any(String),
+              })
+            );
+          });
         });
-      });
+    });
   });
-  test("POST: 201 - will return a posted user document", () => {
-    return request(app)
-      .post("/api/users")
-      .expect(201)
-      .send({
-        firstName: "Ashlyn",
-        lastName: "Lovatt",
-        preferredName: "Ash",
-        role: "ADMIN",
-        userPassword: "securepass458",
-        email: "no@cheese.com",
-      })
-      .then(({ body }) => {
-        const user = body.user;
-        expect(user).toMatchObject({
+  describe("POST", () => {
+    test("POST: 201 - will return a posted user document", () => {
+      return request(app)
+        .post("/api/users")
+        .expect(201)
+        .send({
           firstName: "Ashlyn",
           lastName: "Lovatt",
           preferredName: "Ash",
           role: "ADMIN",
           userPassword: "securepass458",
           email: "no@cheese.com",
+        })
+        .then(({ body }) => {
+          const user = body.user;
+          expect(user).toMatchObject({
+            firstName: "Ashlyn",
+            lastName: "Lovatt",
+            preferredName: "Ash",
+            role: "ADMIN",
+            userPassword: "securepass458",
+            email: "no@cheese.com",
+          });
+
+          return fetchUsers(testDb);
+        })
+        .then((users) => {
+          expect(users.length).toBe(6);
         });
+    });
 
-        return fetchUsers(testDb);
-      })
-      .then((users) => {
-        expect(users.length).toBe(6);
-      });
-  });
-  test("DELETE:204 - will delete a user document from Users collection", async () => {
-    const users = await fetchUsers(testDb);
-    const testUserId = users[0]["_id"];
-
-    return request(app)
-      .delete("/api/users/" + testUserId)
-      .expect(204)
-      .then(() => {
-        return fetchUsers(testDb);
-      })
-
-      .then((users) => {
-        expect(users.length).toBe(4);
-      });
+    // error handling needed for post request
   });
 });
 
-describe("/api/thoughts", () => {
-  test("GET: 200 - will return object containing an list of thoughts", () => {
-    return request(app)
-      .get("/api/thoughts")
-      .expect(200)
-      .then(({ body }) => {
-        const thoughts = body.thoughts;
-        expect(thoughts.length).toBe(6);
-        thoughts.forEach((thought: Thought) => {
-          expect(thought).toEqual(
-            expect.objectContaining({
-              _id: expect.any(String),
-              thoughtMessage: expect.any(String),
-              category: expect.any(String),
-              isPriority: expect.any(Boolean),
-            })
-          );
-        });
-      });
-  });
-  test("POST: 201 - will return a posted thought document", async () => {
-    const users = await fetchUsers(testDb);
-    const testUserId = users[0]["_id"];
+describe("/api/users/:user_id", () => {
+  describe("DELETE", () => {
+    test("DELETE:204 - will delete a user document from Users collection by the userID", async () => {
+      const users = await fetchUsers(testDb);
+      const testUserId = users[0]["_id"];
 
-    return request(app)
-      .post("/api/thoughts")
-      .expect(201)
-      .send({
-        _userId: testUserId.toHexString(),
-        category: "BILLS",
-        isPriority: false,
-        thoughtMessage: "I need to pay my billy bills",
-      })
-      .then(({ body }) => {
-        expect(body.thought).toMatchObject({
+      return request(app)
+        .delete("/api/users/" + testUserId)
+        .expect(204)
+        .then(() => {
+          return fetchUsers(testDb);
+        })
+
+        .then((users) => {
+          expect(users.length).toBe(4);
+        });
+    });
+  });
+
+  // error handling needed to be thought about
+});
+
+describe("/api/thoughts", () => {
+  describe("GET", () => {
+    test("GET: 200 - will return object containing an list of thoughts", () => {
+      return request(app)
+        .get("/api/thoughts")
+        .expect(200)
+        .then(({ body }) => {
+          const thoughts = body.thoughts;
+          expect(thoughts.length).toBe(6);
+          thoughts.forEach((thought: Thought) => {
+            expect(thought).toEqual(
+              expect.objectContaining({
+                _id: expect.any(String),
+                thoughtMessage: expect.any(String),
+                category: expect.any(String),
+                isPriority: expect.any(Boolean),
+              })
+            );
+          });
+        });
+    });
+  });
+
+  describe("POST", () => {
+    test("POST: 201 - will return a posted thought document", async () => {
+      const users = await fetchUsers(testDb);
+      const testUserId = users[0]["_id"];
+
+      return request(app)
+        .post("/api/thoughts")
+        .expect(201)
+        .send({
           _userId: testUserId.toHexString(),
           category: "BILLS",
           isPriority: false,
           thoughtMessage: "I need to pay my billy bills",
+        })
+        .then(({ body }) => {
+          expect(body.thought).toMatchObject({
+            _userId: testUserId.toHexString(),
+            category: "BILLS",
+            isPriority: false,
+            thoughtMessage: "I need to pay my billy bills",
+          });
+
+          return fetchThoughts(testDb);
+        })
+        .then((thoughts) => {
+          thoughts[6], "<-- in database";
+          expect(thoughts.length).toBe(7);
         });
-
-        return fetchThoughts(testDb);
-      })
-      .then((thoughts) => {
-        thoughts[6], "<-- in database";
-        expect(thoughts.length).toBe(7);
-      });
+    });
+    // error handling needed for post request
   });
-  test("DELETE: 204 - will delete a thought document from Thoughts collection", async () => {
-    const thoughts = await fetchThoughts(testDb);
-    const testThoughtId = thoughts[0]["_id"];
+});
 
-    return request(app)
-      .delete("/api/thoughts/" + testThoughtId)
-      .expect(204)
-      .then(() => {
-        return fetchThoughts(testDb);
-      })
+describe("/api/thoughts/:thought_id", () => {
+  describe("PATCH", () => {
+    test("PATCH: 200 - will return updated thought with amended thoughtMessage", async () => {
+      const thoughts = await fetchThoughts(testDb);
+      const testThoughtId = thoughts[0]["_id"].toHexString();
 
-      .then((users) => {
-        expect(users.length).toBe(5);
-      });
+      expect(thoughts[0].thoughtMessage).toBe(
+        "Need to fix the leaking sink in the kitchen."
+      );
+
+      return request(app)
+        .patch("/api/thoughts/" + testThoughtId)
+        .expect(200)
+        .send({
+          thoughtMessage: "I have updated this thought msg!",
+        })
+        .then(({ body }) => {
+          const updatedThought = body.thought;
+          expect(testThoughtId).toBe(updatedThought._id);
+          expect(updatedThought.thoughtMessage).toBe(
+            "I have updated this thought msg!"
+          );
+        });
+    });
+    test("PATCH: 200 - will return updated thought with isPriority property amended", async () => {
+      const thoughts = await fetchThoughts(testDb);
+      const testThoughtId = thoughts[0]["_id"].toHexString();
+
+      expect(thoughts[0].isPriority).toBe(true);
+
+      return request(app)
+        .patch("/api/thoughts/" + testThoughtId)
+        .expect(200)
+        .send({
+          isPriority: false,
+        })
+        .then(({ body }) => {
+          const updatedThought = body.thought;
+          expect(testThoughtId).toBe(updatedThought._id);
+          expect(updatedThought.isPriority).toBe(false);
+        });
+    });
+    test("PATCH: 200 - will return updated thought with category amended", async () => {
+      const thoughts = await fetchThoughts(testDb);
+      const testThoughtId = thoughts[0]["_id"].toHexString();
+
+      expect(thoughts[0].category).toBe("HOME");
+
+      return request(app)
+        .patch("/api/thoughts/" + testThoughtId)
+        .expect(200)
+        .send({
+          category: "GENERAL",
+        })
+        .then(({ body }) => {
+          const updatedThought = body.thought;
+          expect(testThoughtId).toBe(updatedThought._id);
+          expect(updatedThought.category).toBe("GENERAL");
+        });
+    });
+
+    // error handling needed here - think about possible errors
   });
-  test("DELETE: 204 - will delete all thought documents but a specific user from Thoughts collection", async () => {
-    const thoughts = await fetchUsers(testDb);
-    const testUserId = thoughts[0]["_id"];
+  describe("DELETE", () => {
+    test("DELETE: 204 - will delete a thought document from Thoughts collection", async () => {
+      const thoughts = await fetchThoughts(testDb);
+      const testThoughtId = thoughts[0]["_id"];
 
-    return request(app)
-      .delete("/api/thoughts/users/" + testUserId)
-      .expect(204)
-      .then(() => {
-        return fetchThoughts(testDb);
-      })
+      return request(app)
+        .delete("/api/thoughts/" + testThoughtId)
+        .expect(204)
+        .then(() => {
+          return fetchThoughts(testDb);
+        })
 
-      .then((users) => {
-        expect(users.length).toBe(3);
-      });
+        .then((users) => {
+          expect(users.length).toBe(5);
+        });
+    });
+
+    // error handling needed to be thought about
+  });
+});
+
+describe("/api/thoughts/users/:user_id", () => {
+  describe("DELETE", () => {
+    test("DELETE: 204 - will delete all thought documents by a specific user from Thoughts collection", async () => {
+      const thoughts = await fetchUsers(testDb);
+      const testUserId = thoughts[0]["_id"];
+
+      return request(app)
+        .delete("/api/thoughts/users/" + testUserId)
+        .expect(204)
+        .then(() => {
+          return fetchThoughts(testDb);
+        })
+
+        .then((users) => {
+          expect(users.length).toBe(3);
+        });
+    });
   });
 });

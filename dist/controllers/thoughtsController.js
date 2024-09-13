@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteThoughtsByUserId = exports.deleteThought = exports.postThought = exports.getThoughts = void 0;
+exports.updateThoughtDetails = exports.deleteThoughtsByUserId = exports.deleteThought = exports.postThought = exports.getThoughts = void 0;
 const thoughtsModel_1 = require("../models/thoughtsModel");
 const mongodb_1 = require("mongodb");
 const getThoughts = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -56,3 +56,16 @@ const deleteThoughtsByUserId = (req, res, next) => __awaiter(void 0, void 0, voi
     }
 });
 exports.deleteThoughtsByUserId = deleteThoughtsByUserId;
+const updateThoughtDetails = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const thoughtId = req.params.thought_id;
+        const updateDatails = req.body;
+        const mongoDb = req.app.get("mongoDb");
+        const updatedThought = yield (0, thoughtsModel_1.amendThoughtDetails)(mongoDb, thoughtId, updateDatails);
+        res.status(200).send({ thought: updatedThought });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.updateThoughtDetails = updateThoughtDetails;
