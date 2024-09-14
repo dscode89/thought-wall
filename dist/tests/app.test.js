@@ -57,8 +57,6 @@ describe("/api/users", () => {
     });
     describe("POST", () => {
         test("POST: 201 - will return a new posted user document", () => {
-            const salt = bcryptjs_1.default.genSaltSync(10);
-            const hash = bcryptjs_1.default.hashSync("securepass458", salt);
             return (0, supertest_1.default)(app_1.default)
                 .post("/api/users")
                 .expect(201)
@@ -173,6 +171,8 @@ describe("/api/users/:user_id", () => {
         test("PATCH: 200 - will return a user document with an updated userPassword property", () => __awaiter(void 0, void 0, void 0, function* () {
             const users = yield (0, usersModel_1.fetchUsers)(testDb);
             const testUserId = users[0]["_id"].toHexString();
+            // expect encrypted password to be what it was originally
+            expect(bcryptjs_1.default.compareSync("password123", users[0].userPassword)).toBeTruthy();
             return (0, supertest_1.default)(app_1.default)
                 .patch("/api/users/" + testUserId)
                 .expect(200)
@@ -181,6 +181,11 @@ describe("/api/users/:user_id", () => {
             })
                 .then(({ body }) => {
                 const updatedUser = body.user;
+                // check user id to make sure it's the same user document
+                expect(testUserId).toBe(updatedUser._id);
+                // expect new encrypted password to be ther new password
+                expect(bcryptjs_1.default.compareSync("newPassword123", updatedUser.userPassword)).toBeTruthy();
+                // expect the passwords to be different after updating
                 expect(users[0].userPassword).not.toBe(updatedUser.password);
             });
         }));
