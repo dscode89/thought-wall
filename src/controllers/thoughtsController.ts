@@ -7,7 +7,6 @@ import {
   amendThoughtDetails,
 } from "../models/thoughtsModel";
 import { Db, ObjectId } from "mongodb";
-import { PatchObjType } from "../types/types";
 
 export const getThoughts: RequestHandler = async (
   req: Request,

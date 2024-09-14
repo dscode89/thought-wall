@@ -18,6 +18,7 @@ const app_1 = __importDefault(require("../app"));
 const createDatabaseConnection_1 = __importDefault(require("../database/createDatabaseConnection"));
 const usersModel_1 = require("../models/usersModel");
 const thoughtsModel_1 = require("../models/thoughtsModel");
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 let testDb;
 let testDbClient;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
@@ -56,6 +57,8 @@ describe("/api/users", () => {
     });
     describe("POST", () => {
         test("POST: 201 - will return a new posted user document", () => {
+            const salt = bcryptjs_1.default.genSaltSync(10);
+            const hash = bcryptjs_1.default.hashSync("securepass458", salt);
             return (0, supertest_1.default)(app_1.default)
                 .post("/api/users")
                 .expect(201)
@@ -69,12 +72,12 @@ describe("/api/users", () => {
             })
                 .then(({ body }) => {
                 const user = body.user;
+                expect(bcryptjs_1.default.compareSync("securepass458", user.userPassword)).toBeTruthy();
                 expect(user).toMatchObject({
                     firstName: "Ashlyn",
                     lastName: "Lovatt",
                     preferredName: "Ash",
                     role: "ADMIN",
-                    userPassword: "securepass458",
                     email: "no@cheese.com",
                 });
                 return (0, usersModel_1.fetchUsers)(testDb);
@@ -83,8 +86,8 @@ describe("/api/users", () => {
                 expect(users.length).toBe(6);
             });
         });
-        // error handling needed for post request
     });
+    // error handling needed for post request
 });
 describe("/api/users/:user_id", () => {
     describe("DELETE", () => {
@@ -99,6 +102,121 @@ describe("/api/users/:user_id", () => {
             })
                 .then((users) => {
                 expect(users.length).toBe(4);
+            });
+        }));
+    });
+    describe("PATCH", () => {
+        test("PATCH: 200 - will return a user document with an updated firstName property", () => __awaiter(void 0, void 0, void 0, function* () {
+            const users = yield (0, usersModel_1.fetchUsers)(testDb);
+            const testUserId = users[0]["_id"].toHexString();
+            expect(users[0].firstName).toBe("John");
+            return (0, supertest_1.default)(app_1.default)
+                .patch("/api/users/" + testUserId)
+                .expect(200)
+                .send({
+                firstName: "Dave",
+            })
+                .then(({ body }) => {
+                const updatedUser = body.user;
+                expect(testUserId).toBe(updatedUser._id);
+                expect(updatedUser.firstName).toBe("Dave");
+            });
+        }));
+        test("PATCH: 200 - will return a user document with an updated lastName property", () => __awaiter(void 0, void 0, void 0, function* () {
+            const users = yield (0, usersModel_1.fetchUsers)(testDb);
+            const testUserId = users[0]["_id"].toHexString();
+            expect(users[0].lastName).toBe("Doe");
+            return (0, supertest_1.default)(app_1.default)
+                .patch("/api/users/" + testUserId)
+                .expect(200)
+                .send({
+                lastName: "Moran",
+            })
+                .then(({ body }) => {
+                const updatedUser = body.user;
+                expect(testUserId).toBe(updatedUser._id);
+                expect(updatedUser.lastName).toBe("Moran");
+            });
+        }));
+        test("PATCH: 200 - will return a user document with an updated preferredNAme property", () => __awaiter(void 0, void 0, void 0, function* () {
+            const users = yield (0, usersModel_1.fetchUsers)(testDb);
+            const testUserId = users[0]["_id"].toHexString();
+            expect(users[0].preferredName).toBe("Johnny");
+            return (0, supertest_1.default)(app_1.default)
+                .patch("/api/users/" + testUserId)
+                .expect(200)
+                .send({
+                preferredName: "John Boy",
+            })
+                .then(({ body }) => {
+                const updatedUser = body.user;
+                expect(testUserId).toBe(updatedUser._id);
+                expect(updatedUser.preferredName).toBe("John Boy");
+            });
+        }));
+        test("PATCH: 200 - will return a user document with an updated role property", () => __awaiter(void 0, void 0, void 0, function* () {
+            const users = yield (0, usersModel_1.fetchUsers)(testDb);
+            const testUserId = users[0]["_id"].toHexString();
+            expect(users[0].role).toBe("ADMIN");
+            return (0, supertest_1.default)(app_1.default)
+                .patch("/api/users/" + testUserId)
+                .expect(200)
+                .send({
+                role: "USER",
+            })
+                .then(({ body }) => {
+                const updatedUser = body.user;
+                expect(testUserId).toBe(updatedUser._id);
+                expect(updatedUser.role).toBe("USER");
+            });
+        }));
+        test("PATCH: 200 - will return a user document with an updated userPassword property", () => __awaiter(void 0, void 0, void 0, function* () {
+            const users = yield (0, usersModel_1.fetchUsers)(testDb);
+            const testUserId = users[0]["_id"].toHexString();
+            return (0, supertest_1.default)(app_1.default)
+                .patch("/api/users/" + testUserId)
+                .expect(200)
+                .send({
+                userPassword: "newPassword123",
+            })
+                .then(({ body }) => {
+                const updatedUser = body.user;
+                expect(users[0].userPassword).not.toBe(updatedUser.password);
+            });
+        }));
+        test("PATCH: 200 - will return a user document with an updated email property", () => __awaiter(void 0, void 0, void 0, function* () {
+            const users = yield (0, usersModel_1.fetchUsers)(testDb);
+            const testUserId = users[0]["_id"].toHexString();
+            expect(users[0].email).toBe("ham@cheese.com");
+            return (0, supertest_1.default)(app_1.default)
+                .patch("/api/users/" + testUserId)
+                .expect(200)
+                .send({
+                email: "spam@cheese.com",
+            })
+                .then(({ body }) => {
+                const updatedUser = body.user;
+                expect(testUserId).toBe(updatedUser._id);
+                expect(updatedUser.email).toBe("spam@cheese.com");
+            });
+        }));
+        test("PATCH: 200 - will return a user document with an multiple properties updated", () => __awaiter(void 0, void 0, void 0, function* () {
+            const users = yield (0, usersModel_1.fetchUsers)(testDb);
+            const testUserId = users[0]["_id"].toHexString();
+            expect(users[0].email).toBe("ham@cheese.com");
+            expect(users[0].role).toBe("ADMIN");
+            return (0, supertest_1.default)(app_1.default)
+                .patch("/api/users/" + testUserId)
+                .expect(200)
+                .send({
+                role: "USER",
+                email: "spam@cheese.com",
+            })
+                .then(({ body }) => {
+                const updatedUser = body.user;
+                expect(testUserId).toBe(updatedUser._id);
+                expect(updatedUser.email).toBe("spam@cheese.com");
+                expect(updatedUser.role).toBe("USER");
             });
         }));
     });

@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = [
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const users = [
     {
         firstName: "John",
         lastName: "Doe",
@@ -42,3 +46,9 @@ exports.default = [
         email: "pam@cheese.com",
     },
 ];
+users.forEach((user) => {
+    const salt = bcryptjs_1.default.genSaltSync(10);
+    const hash = bcryptjs_1.default.hashSync(user.userPassword, salt);
+    user.userPassword = hash;
+});
+exports.default = users;

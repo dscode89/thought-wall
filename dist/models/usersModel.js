@@ -8,9 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeUser = exports.createUser = exports.fetchUsers = void 0;
+exports.amendUserDetails = exports.removeUser = exports.createUser = exports.fetchUsers = void 0;
 const mongodb_1 = require("mongodb");
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const fetchUsers = (db) => __awaiter(void 0, void 0, void 0, function* () {
     // get the Users collection from chosen database
     const usersCollection = db.collection("Users");
@@ -23,7 +27,9 @@ const createUser = (db, user) => __awaiter(void 0, void 0, void 0, function* () 
     // get the Users collection from chosen database
     const usersCollection = db.collection("Users");
     // this will return a cluster object so use toArray() to give you an array of users
-    const { insertedId } = yield usersCollection.insertOne(user);
+    const salt = bcryptjs_1.default.genSaltSync(10);
+    const hash = bcryptjs_1.default.hashSync(user.userPassword, salt);
+    const { insertedId } = yield usersCollection.insertOne(Object.assign(Object.assign({}, user), { userPassword: hash }));
     const newUser = yield usersCollection.findOne({ _id: insertedId });
     return newUser;
 });
@@ -35,3 +41,14 @@ const removeUser = (db, id) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.removeUser = removeUser;
+const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, void 0, function* () {
+    if (updateDetails.userPassword) {
+        const salt = bcryptjs_1.default.genSaltSync(10);
+        const hash = bcryptjs_1.default.hashSync(updateDetails.userPassword, salt);
+        updateDetails.userPassword = hash;
+    }
+    const usersCollection = db.collection("Users");
+    const updatedUser = yield usersCollection.findOneAndUpdate({ _id: new mongodb_1.ObjectId(id) }, { $set: Object.assign({}, updateDetails) }, { returnDocument: "after" });
+    return updatedUser;
+});
+exports.amendUserDetails = amendUserDetails;

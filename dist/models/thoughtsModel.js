@@ -38,9 +38,9 @@ const removeThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, fun
     });
 });
 exports.removeThoughtsByUserId = removeThoughtsByUserId;
-const amendThoughtDetails = (db, id, updateDatails) => __awaiter(void 0, void 0, void 0, function* () {
+const amendThoughtDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, void 0, function* () {
     const thoughtsCollection = db.collection("Thoughts");
-    const updatedThought = yield thoughtsCollection.findOneAndUpdate({ _id: new mongodb_1.ObjectId(id) }, { $set: Object.assign({}, updateDatails) }, { returnDocument: "after" });
+    const updatedThought = yield thoughtsCollection.findOneAndUpdate({ _id: new mongodb_1.ObjectId(id) }, { $set: Object.assign({}, updateDetails) }, { returnDocument: "after" });
     return updatedThought;
 });
 exports.amendThoughtDetails = amendThoughtDetails;

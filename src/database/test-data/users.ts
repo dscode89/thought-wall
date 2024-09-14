@@ -1,4 +1,6 @@
-export default [
+import bcrypt from "bcryptjs";
+
+const users = [
   {
     firstName: "John",
     lastName: "Doe",
@@ -40,3 +42,11 @@ export default [
     email: "pam@cheese.com",
   },
 ];
+
+users.forEach((user) => {
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(user.userPassword, salt);
+  user.userPassword = hash;
+});
+
+export default users;

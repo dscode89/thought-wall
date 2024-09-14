@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.postUser = exports.getUsers = void 0;
+exports.updateUserDetails = exports.deleteUser = exports.postUser = exports.getUsers = void 0;
 const usersModel_1 = require("../models/usersModel");
 const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -45,3 +45,16 @@ const deleteUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.deleteUser = deleteUser;
+const updateUserDetails = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.params.user_id;
+        const mongoDb = req.app.get("mongoDb");
+        const updateDatails = req.body;
+        const updatedUser = yield (0, usersModel_1.amendUserDetails)(mongoDb, userId, updateDatails);
+        res.status(200).send({ user: updatedUser });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.updateUserDetails = updateUserDetails;

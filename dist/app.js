@@ -12,6 +12,7 @@ app.use(express_1.default.json());
 app.get("/api/users", usersController_1.getUsers);
 app.post("/api/users", usersController_1.postUser);
 app.delete("/api/users/:user_id", usersController_1.deleteUser);
+app.patch("/api/users/:user_id", usersController_1.updateUserDetails);
 //thoughts
 app.get("/api/thoughts", thoughtsController_1.getThoughts);
 app.post("/api/thoughts", thoughtsController_1.postThought);

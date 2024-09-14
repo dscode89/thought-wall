@@ -6,6 +6,7 @@ import createDatabaseConnection from "../database/createDatabaseConnection";
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { fetchUsers } from "../models/usersModel";
 import { fetchThoughts } from "../models/thoughtsModel";
+import bcrypt from "bcryptjs";
 
 let testDb: Db;
 let testDbClient: MongoClient;
@@ -53,6 +54,8 @@ describe("/api/users", () => {
   });
   describe("POST", () => {
     test("POST: 201 - will return a new posted user document", () => {
+      const salt = bcrypt.genSaltSync(10);
+      const hash = bcrypt.hashSync("securepass458", salt);
       return request(app)
         .post("/api/users")
         .expect(201)
@@ -66,12 +69,15 @@ describe("/api/users", () => {
         })
         .then(({ body }) => {
           const user = body.user;
+
+          expect(
+            bcrypt.compareSync("securepass458", user.userPassword)
+          ).toBeTruthy();
           expect(user).toMatchObject({
             firstName: "Ashlyn",
             lastName: "Lovatt",
             preferredName: "Ash",
             role: "ADMIN",
-            userPassword: "securepass458",
             email: "no@cheese.com",
           });
 
@@ -81,9 +87,9 @@ describe("/api/users", () => {
           expect(users.length).toBe(6);
         });
     });
-
-    // error handling needed for post request
   });
+
+  // error handling needed for post request
 });
 
 describe("/api/users/:user_id", () => {
@@ -101,6 +107,134 @@ describe("/api/users/:user_id", () => {
 
         .then((users) => {
           expect(users.length).toBe(4);
+        });
+    });
+  });
+  describe("PATCH", () => {
+    test("PATCH: 200 - will return a user document with an updated firstName property", async () => {
+      const users = await fetchUsers(testDb);
+      const testUserId = users[0]["_id"].toHexString();
+
+      expect(users[0].firstName).toBe("John");
+
+      return request(app)
+        .patch("/api/users/" + testUserId)
+        .expect(200)
+        .send({
+          firstName: "Dave",
+        })
+        .then(({ body }) => {
+          const updatedUser = body.user;
+          expect(testUserId).toBe(updatedUser._id);
+          expect(updatedUser.firstName).toBe("Dave");
+        });
+    });
+    test("PATCH: 200 - will return a user document with an updated lastName property", async () => {
+      const users = await fetchUsers(testDb);
+      const testUserId = users[0]["_id"].toHexString();
+
+      expect(users[0].lastName).toBe("Doe");
+
+      return request(app)
+        .patch("/api/users/" + testUserId)
+        .expect(200)
+        .send({
+          lastName: "Moran",
+        })
+        .then(({ body }) => {
+          const updatedUser = body.user;
+          expect(testUserId).toBe(updatedUser._id);
+          expect(updatedUser.lastName).toBe("Moran");
+        });
+    });
+    test("PATCH: 200 - will return a user document with an updated preferredNAme property", async () => {
+      const users = await fetchUsers(testDb);
+      const testUserId = users[0]["_id"].toHexString();
+
+      expect(users[0].preferredName).toBe("Johnny");
+
+      return request(app)
+        .patch("/api/users/" + testUserId)
+        .expect(200)
+        .send({
+          preferredName: "John Boy",
+        })
+        .then(({ body }) => {
+          const updatedUser = body.user;
+          expect(testUserId).toBe(updatedUser._id);
+          expect(updatedUser.preferredName).toBe("John Boy");
+        });
+    });
+    test("PATCH: 200 - will return a user document with an updated role property", async () => {
+      const users = await fetchUsers(testDb);
+      const testUserId = users[0]["_id"].toHexString();
+
+      expect(users[0].role).toBe("ADMIN");
+
+      return request(app)
+        .patch("/api/users/" + testUserId)
+        .expect(200)
+        .send({
+          role: "USER",
+        })
+        .then(({ body }) => {
+          const updatedUser = body.user;
+          expect(testUserId).toBe(updatedUser._id);
+          expect(updatedUser.role).toBe("USER");
+        });
+    });
+    test("PATCH: 200 - will return a user document with an updated userPassword property", async () => {
+      const users = await fetchUsers(testDb);
+      const testUserId = users[0]["_id"].toHexString();
+
+      return request(app)
+        .patch("/api/users/" + testUserId)
+        .expect(200)
+        .send({
+          userPassword: "newPassword123",
+        })
+        .then(({ body }) => {
+          const updatedUser = body.user;
+          expect(users[0].userPassword).not.toBe(updatedUser.password);
+        });
+    });
+    test("PATCH: 200 - will return a user document with an updated email property", async () => {
+      const users = await fetchUsers(testDb);
+      const testUserId = users[0]["_id"].toHexString();
+
+      expect(users[0].email).toBe("ham@cheese.com");
+
+      return request(app)
+        .patch("/api/users/" + testUserId)
+        .expect(200)
+        .send({
+          email: "spam@cheese.com",
+        })
+        .then(({ body }) => {
+          const updatedUser = body.user;
+          expect(testUserId).toBe(updatedUser._id);
+          expect(updatedUser.email).toBe("spam@cheese.com");
+        });
+    });
+    test("PATCH: 200 - will return a user document with an multiple properties updated", async () => {
+      const users = await fetchUsers(testDb);
+      const testUserId = users[0]["_id"].toHexString();
+
+      expect(users[0].email).toBe("ham@cheese.com");
+      expect(users[0].role).toBe("ADMIN");
+
+      return request(app)
+        .patch("/api/users/" + testUserId)
+        .expect(200)
+        .send({
+          role: "USER",
+          email: "spam@cheese.com",
+        })
+        .then(({ body }) => {
+          const updatedUser = body.user;
+          expect(testUserId).toBe(updatedUser._id);
+          expect(updatedUser.email).toBe("spam@cheese.com");
+          expect(updatedUser.role).toBe("USER");
         });
     });
   });

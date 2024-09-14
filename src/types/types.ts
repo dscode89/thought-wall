@@ -16,8 +16,17 @@ export interface Thought {
   isPriority: boolean;
 }
 
-export interface PatchObjType {
+export interface PatchThoughtObjType {
   thoughtMessage?: string;
   isPriority?: boolean;
   category?: "BILLS" | "GENERAL" | "HOME";
+}
+
+export interface PatchUserObjType {
+  firstName?: string;
+  lastName?: string;
+  preferredName?: string;
+  role?: "ADMIN" | "USER";
+  userPassword?: string;
+  email?: string;
 }

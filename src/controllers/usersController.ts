@@ -1,5 +1,10 @@
 import { NextFunction, RequestHandler, Response, Request } from "express";
-import { fetchUsers, createUser, removeUser } from "../models/usersModel";
+import {
+  fetchUsers,
+  createUser,
+  removeUser,
+  amendUserDetails,
+} from "../models/usersModel";
 import { Db } from "mongodb";
 
 export const getUsers: RequestHandler = async (
@@ -43,6 +48,23 @@ export const deleteUser: RequestHandler = async (
     await removeUser(mongoDb, userId);
 
     res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUserDetails: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.params.user_id;
+    const mongoDb: Db = req.app.get("mongoDb");
+    const updateDatails = req.body;
+    const updatedUser = await amendUserDetails(mongoDb, userId, updateDatails);
+
+    res.status(200).send({ user: updatedUser });
   } catch (error) {
     next(error);
   }
