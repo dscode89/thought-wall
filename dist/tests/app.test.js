@@ -55,7 +55,7 @@ describe("/api/users", () => {
         });
     });
     describe("POST", () => {
-        test("POST: 201 - will return a posted user document", () => {
+        test("POST: 201 - will return a new posted user document", () => {
             return (0, supertest_1.default)(app_1.default)
                 .post("/api/users")
                 .expect(201)
@@ -125,7 +125,7 @@ describe("/api/thoughts", () => {
         });
     });
     describe("POST", () => {
-        test("POST: 201 - will return a posted thought document", () => __awaiter(void 0, void 0, void 0, function* () {
+        test("POST: 201 - will return a new posted thought document", () => __awaiter(void 0, void 0, void 0, function* () {
             const users = yield (0, usersModel_1.fetchUsers)(testDb);
             const testUserId = users[0]["_id"];
             return (0, supertest_1.default)(app_1.default)
@@ -202,6 +202,25 @@ describe("/api/thoughts/:thought_id", () => {
                 const updatedThought = body.thought;
                 expect(testThoughtId).toBe(updatedThought._id);
                 expect(updatedThought.category).toBe("GENERAL");
+            });
+        }));
+        test("PATCH: 200 - will return updated thought document that has had multiple valid properties amended", () => __awaiter(void 0, void 0, void 0, function* () {
+            const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
+            const testThoughtId = thoughts[0]["_id"].toHexString();
+            expect(thoughts[0].category).toBe("HOME");
+            expect(thoughts[0].isPriority).toBe(true);
+            return (0, supertest_1.default)(app_1.default)
+                .patch("/api/thoughts/" + testThoughtId)
+                .expect(200)
+                .send({
+                category: "GENERAL",
+                isPriority: false,
+            })
+                .then(({ body }) => {
+                const updatedThought = body.thought;
+                expect(testThoughtId).toBe(updatedThought._id);
+                expect(updatedThought.category).toBe("GENERAL");
+                expect(updatedThought.isPriority).toBe(false);
             });
         }));
         // error handling needed here - think about possible errors

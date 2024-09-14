@@ -52,7 +52,7 @@ describe("/api/users", () => {
     });
   });
   describe("POST", () => {
-    test("POST: 201 - will return a posted user document", () => {
+    test("POST: 201 - will return a new posted user document", () => {
       return request(app)
         .post("/api/users")
         .expect(201)
@@ -132,7 +132,7 @@ describe("/api/thoughts", () => {
   });
 
   describe("POST", () => {
-    test("POST: 201 - will return a posted thought document", async () => {
+    test("POST: 201 - will return a new posted thought document", async () => {
       const users = await fetchUsers(testDb);
       const testUserId = users[0]["_id"];
 
@@ -222,6 +222,28 @@ describe("/api/thoughts/:thought_id", () => {
           const updatedThought = body.thought;
           expect(testThoughtId).toBe(updatedThought._id);
           expect(updatedThought.category).toBe("GENERAL");
+        });
+    });
+    test("PATCH: 200 - will return updated thought document that has had multiple valid properties amended", async () => {
+      const thoughts = await fetchThoughts(testDb);
+      const testThoughtId = thoughts[0]["_id"].toHexString();
+
+      expect(thoughts[0].category).toBe("HOME");
+      expect(thoughts[0].isPriority).toBe(true);
+
+      return request(app)
+        .patch("/api/thoughts/" + testThoughtId)
+        .expect(200)
+        .send({
+          category: "GENERAL",
+          isPriority: false,
+        })
+        .then(({ body }) => {
+          const updatedThought = body.thought;
+
+          expect(testThoughtId).toBe(updatedThought._id);
+          expect(updatedThought.category).toBe("GENERAL");
+          expect(updatedThought.isPriority).toBe(false);
         });
     });
 
