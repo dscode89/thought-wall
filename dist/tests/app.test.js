@@ -84,10 +84,54 @@ describe("/api/users", () => {
                 expect(users.length).toBe(6);
             });
         });
+        describe("ERRORS", () => {
+            // come back to this and have a think
+        });
     });
     // error handling needed for post request
 });
 describe("/api/users/:user_id", () => {
+    describe("GET", () => {
+        test("GET: 200 - returns a user based on provided user id", () => __awaiter(void 0, void 0, void 0, function* () {
+            const users = yield (0, usersModel_1.fetchUsers)(testDb);
+            const testUserId = users[0]["_id"];
+            return (0, supertest_1.default)(app_1.default)
+                .get("/api/users/" + testUserId)
+                .expect(200)
+                .then(({ body }) => {
+                const user = body.user;
+                expect(bcryptjs_1.default.compareSync("password123", user.userPassword)).toBeTruthy();
+                expect(typeof user._id).toBe("string");
+                expect(user).toMatchObject({
+                    firstName: "John",
+                    lastName: "Doe",
+                    preferredName: "Johnny",
+                    role: "ADMIN",
+                    email: "ham@cheese.com",
+                });
+            });
+        }));
+        describe("ERRORS", () => {
+            test("404 - passed a non-existent userId", () => __awaiter(void 0, void 0, void 0, function* () {
+                const nonExistentId = "66e5af35c085e74eaf5f6487";
+                return (0, supertest_1.default)(app_1.default)
+                    .get("/api/users/" + nonExistentId)
+                    .expect(404)
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("404 - user id not found");
+                });
+            }));
+            test("400 - user id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {
+                const nonExistentId = "66e5af35c085t74eaf5z6487";
+                return (0, supertest_1.default)(app_1.default)
+                    .get("/api/users/" + nonExistentId)
+                    .expect(400)
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - invalid user id");
+                });
+            }));
+        });
+    });
     describe("DELETE", () => {
         test("DELETE:204 - will delete a user document from Users collection by the userID", () => __awaiter(void 0, void 0, void 0, function* () {
             const users = yield (0, usersModel_1.fetchUsers)(testDb);

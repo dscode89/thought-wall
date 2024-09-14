@@ -85,12 +85,63 @@ describe("/api/users", () => {
           expect(users.length).toBe(6);
         });
     });
+    describe("ERRORS", () => {
+      // come back to this and have a think
+    });
   });
 
   // error handling needed for post request
 });
 
 describe("/api/users/:user_id", () => {
+  describe("GET", () => {
+    test("GET: 200 - returns a user based on provided user id", async () => {
+      const users = await fetchUsers(testDb);
+      const testUserId = users[0]["_id"];
+
+      return request(app)
+        .get("/api/users/" + testUserId)
+        .expect(200)
+        .then(({ body }) => {
+          const user = body.user;
+
+          expect(
+            bcrypt.compareSync("password123", user.userPassword)
+          ).toBeTruthy();
+
+          expect(typeof user._id).toBe("string");
+          expect(user).toMatchObject({
+            firstName: "John",
+            lastName: "Doe",
+            preferredName: "Johnny",
+            role: "ADMIN",
+            email: "ham@cheese.com",
+          });
+        });
+    });
+    describe("ERRORS", () => {
+      test("404 - passed a non-existent userId", async () => {
+        const nonExistentId = "66e5af35c085e74eaf5f6487";
+
+        return request(app)
+          .get("/api/users/" + nonExistentId)
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("404 - user id not found");
+          });
+      });
+      test("400 - user id is not a valid 24 char hex string", async () => {
+        const nonExistentId = "66e5af35c085t74eaf5z6487";
+
+        return request(app)
+          .get("/api/users/" + nonExistentId)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("400 - invalid user id");
+          });
+      });
+    });
+  });
   describe("DELETE", () => {
     test("DELETE:204 - will delete a user document from Users collection by the userID", async () => {
       const users = await fetchUsers(testDb);

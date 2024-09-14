@@ -1,4 +1,4 @@
-import { NextFunction, RequestHandler, Response, Request } from "express";
+import { NextFunction, Response, Request } from "express";
 import {
   fetchThoughts,
   createThought,
@@ -8,7 +8,7 @@ import {
 } from "../models/thoughtsModel";
 import { Db, ObjectId } from "mongodb";
 
-export const getThoughts: RequestHandler = async (
+export const getThoughts = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -18,7 +18,7 @@ export const getThoughts: RequestHandler = async (
   res.status(200).send({ thoughts: currentThoughts });
 };
 
-export const postThought: RequestHandler = async (
+export const postThought = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -37,7 +37,7 @@ export const postThought: RequestHandler = async (
   }
 };
 
-export const deleteThought: RequestHandler = async (
+export const deleteThought = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -53,7 +53,7 @@ export const deleteThought: RequestHandler = async (
   }
 };
 
-export const deleteThoughtsByUserId: RequestHandler = async (
+export const deleteThoughtsByUserId = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -69,7 +69,7 @@ export const deleteThoughtsByUserId: RequestHandler = async (
   }
 };
 
-export const updateThoughtDetails: RequestHandler = async (
+export const updateThoughtDetails = async (
   req: Request,
   res: Response,
   next: NextFunction

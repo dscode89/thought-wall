@@ -4,6 +4,7 @@ import {
   createUser,
   removeUser,
   amendUserDetails,
+  fetchUserByUserId,
 } from "../models/usersModel";
 import { Db } from "mongodb";
 
@@ -17,6 +18,22 @@ export const getUsers: RequestHandler = async (
     const currentUsers = await fetchUsers(mongoDb);
 
     res.status(200).send({ users: currentUsers });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUserByUserId: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const mongoDb: Db = req.app.get("mongoDb");
+    const id = req.params.user_id;
+    const requestedUser = await fetchUserByUserId(mongoDb, id);
+
+    res.status(200).send({ user: requestedUser });
   } catch (error) {
     next(error);
   }

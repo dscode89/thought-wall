@@ -11,6 +11,18 @@ export const fetchUsers = async (db: Db) => {
   return currentUsers;
 };
 
+export const fetchUserByUserId = async (db: Db, id: string) => {
+  const usersCollection = db.collection<User>("Users");
+  const requestedUser = await usersCollection.findOne({
+    _id: new ObjectId(id),
+  });
+
+  if (requestedUser === null) {
+    return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+  }
+  return requestedUser;
+};
+
 export const createUser = async (db: Db, user: User) => {
   // get the Users collection from chosen database
   const usersCollection = db.collection<User>("Users");

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserDetails = exports.deleteUser = exports.postUser = exports.getUsers = void 0;
+exports.updateUserDetails = exports.deleteUser = exports.postUser = exports.getUserByUserId = exports.getUsers = void 0;
 const usersModel_1 = require("../models/usersModel");
 const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -22,6 +22,18 @@ const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getUsers = getUsers;
+const getUserByUserId = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const mongoDb = req.app.get("mongoDb");
+        const id = req.params.user_id;
+        const requestedUser = yield (0, usersModel_1.fetchUserByUserId)(mongoDb, id);
+        res.status(200).send({ user: requestedUser });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.getUserByUserId = getUserByUserId;
 const postUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const mongoDb = req.app.get("mongoDb");

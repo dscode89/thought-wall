@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.amendUserDetails = exports.removeUser = exports.createUser = exports.fetchUsers = void 0;
+exports.amendUserDetails = exports.removeUser = exports.createUser = exports.fetchUserByUserId = exports.fetchUsers = void 0;
 const mongodb_1 = require("mongodb");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const fetchUsers = (db) => __awaiter(void 0, void 0, void 0, function* () {
@@ -23,6 +23,17 @@ const fetchUsers = (db) => __awaiter(void 0, void 0, void 0, function* () {
     return currentUsers;
 });
 exports.fetchUsers = fetchUsers;
+const fetchUserByUserId = (db, id) => __awaiter(void 0, void 0, void 0, function* () {
+    const usersCollection = db.collection("Users");
+    const requestedUser = yield usersCollection.findOne({
+        _id: new mongodb_1.ObjectId(id),
+    });
+    if (requestedUser === null) {
+        return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+    }
+    return requestedUser;
+});
+exports.fetchUserByUserId = fetchUserByUserId;
 const createUser = (db, user) => __awaiter(void 0, void 0, void 0, function* () {
     // get the Users collection from chosen database
     const usersCollection = db.collection("Users");
