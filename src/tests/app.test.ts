@@ -86,7 +86,60 @@ describe("/api/users", () => {
         });
     });
     describe("ERRORS", () => {
-      // come back to this and have a think
+      test("POST: 400 - missing properties from request body", () => {
+        return request(app)
+          .post("/api/users")
+          .expect(400)
+          .send({
+            firstName: "Ashlyn",
+            preferredName: "Ash",
+            role: "ADMIN",
+            userPassword: "securepass458",
+            email: "no@cheese.com",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - extra properties posted on request body", () => {
+        return request(app)
+          .post("/api/users")
+          .expect(400)
+          .send({
+            firstName: "Ashlyn",
+            lastName: "Lovatt",
+            favAnimal: "cat",
+            preferredName: "Ash",
+            role: "ADMIN",
+            userPassword: "securepass458",
+            email: "no@cheese.com",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - invalid types for values on request body", () => {
+        return request(app)
+          .post("/api/users")
+          .expect(400)
+          .send({
+            firstName: true,
+            lastName: "Jeff",
+            preferredName: "Ash",
+            role: 4,
+            userPassword: "securepass458",
+            email: "no@cheese.com",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
     });
   });
 
@@ -137,7 +190,7 @@ describe("/api/users/:user_id", () => {
           .get("/api/users/" + nonExistentId)
           .expect(400)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid user id");
+            expect(body.errorMsg).toBe("400 - invalid id provided");
           });
       });
     });
@@ -176,7 +229,7 @@ describe("/api/users/:user_id", () => {
           .delete("/api/users/" + nonExistentId)
           .expect(400)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid user id");
+            expect(body.errorMsg).toBe("400 - invalid id provided");
           });
       });
     });
@@ -345,7 +398,7 @@ describe("/api/users/:user_id", () => {
           })
           .expect(400)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid user id");
+            expect(body.errorMsg).toBe("400 - invalid id provided");
           });
       });
     });
@@ -406,6 +459,64 @@ describe("/api/thoughts", () => {
           expect(thoughts.length).toBe(7);
         });
     });
+    describe("ERRORS", () => {
+      test("POST: 400 - missing properties from request body", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"];
+        return request(app)
+          .post("/api/thoughts")
+          .expect(400)
+          .send({
+            _userId: testUserId.toHexString(),
+            category: "BILLS",
+            isPriority: true,
+            thoughtMessage: "I need to pay my billy bills",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - extra properties posted on request body", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"];
+
+        return request(app)
+          .post("/api/thoughts")
+          .expect(400)
+          .send({
+            _userId: testUserId.toHexString(),
+            category: "BILLS",
+            isPriority: false,
+            thoughtMessage: "I need to pay my billy bills",
+            hungry: true,
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - invalid types for values on request body", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"];
+        return request(app)
+          .post("/api/thoughts")
+          .expect(400)
+          .send({
+            _userId: testUserId.toHexString(),
+            category: false,
+            isPriority: 9,
+            thoughtMessage: "I need to pay my billy bills",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+    });
     // error handling needed for post request
   });
 });
@@ -432,24 +543,24 @@ describe("/api/thoughts/:thought_id", () => {
         });
     });
     describe("ERRORS", () => {
-      test("404 - passed a non-existent userId", async () => {
+      test("404 - passed a non-existent thoughtId", async () => {
         const nonExistentId = "66e5af35c085e74eaf5f6487";
 
         return request(app)
           .get("/api/thoughts/" + nonExistentId)
           .expect(404)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("404 - user id not found");
+            expect(body.errorMsg).toBe("404 - thought id not found");
           });
       });
-      test("400 - user id is not a valid 24 char hex string", async () => {
+      test("400 - thought id is not a valid 24 char hex string", async () => {
         const nonExistentId = "66e5af35c085e74eax5f6487";
 
         return request(app)
           .get("/api/thoughts/" + nonExistentId)
           .expect(400)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid user id");
+            expect(body.errorMsg).toBe("400 - invalid id provided");
           });
       });
     });
@@ -537,7 +648,7 @@ describe("/api/thoughts/:thought_id", () => {
         });
     });
     describe("ERRORS", () => {
-      test("404 - passed a non-existent userId", async () => {
+      test("404 - passed a non-existent thoughtId", async () => {
         const nonExistentId = "66e5af35c085e74eaf5f6487";
 
         return request(app)
@@ -547,10 +658,10 @@ describe("/api/thoughts/:thought_id", () => {
             thoughtMessage: "oops",
           })
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("404 - user id not found");
+            expect(body.errorMsg).toBe("404 - thought id not found");
           });
       });
-      test("400 - user id is not a valid 24 char hex string", async () => {
+      test("400 - thought id is not a valid 24 char hex string", async () => {
         const nonExistentId = "66e5af35c085e74eax5f6487";
 
         return request(app)
@@ -560,7 +671,7 @@ describe("/api/thoughts/:thought_id", () => {
             thoughtMessage: "oops",
           })
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid user id");
+            expect(body.errorMsg).toBe("400 - invalid id provided");
           });
       });
     });
@@ -583,24 +694,24 @@ describe("/api/thoughts/:thought_id", () => {
         });
     });
     describe("ERRORS", () => {
-      test("404 - passed a non-existent userId", async () => {
+      test("404 - passed a non-existent thoughtId", async () => {
         const nonExistentId = "66e5af35c085e74eaf5f6487";
 
         return request(app)
           .delete("/api/thoughts/" + nonExistentId)
           .expect(404)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("404 - invalid user id");
+            expect(body.errorMsg).toBe("404 - invalid thought id");
           });
       });
-      test("400 - user id is not a valid 24 char hex string", async () => {
+      test("400 - thought id is not a valid 24 char hex string", async () => {
         const nonExistentId = "66e5af35c085e74eax5f6487";
 
         return request(app)
           .delete("/api/thoughts/" + nonExistentId)
           .expect(400)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid user id");
+            expect(body.errorMsg).toBe("400 - invalid id provided");
           });
       });
     });
@@ -608,7 +719,7 @@ describe("/api/thoughts/:thought_id", () => {
   });
 });
 
-describe.only("/api/thoughts/users/:user_id", () => {
+describe("/api/thoughts/users/:user_id", () => {
   describe("GET", () => {
     test("200 - will return all thoughts with a specified userId", async () => {
       const users = await fetchUsers(testDb);
@@ -670,7 +781,7 @@ describe.only("/api/thoughts/users/:user_id", () => {
           .delete("/api/thoughts/users/" + nonExistentId)
           .expect(400)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid user id");
+            expect(body.errorMsg).toBe("400 - invalid id provided");
           });
       });
     });

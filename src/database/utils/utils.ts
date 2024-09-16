@@ -1,3 +1,5 @@
+import { User } from "../../types/types";
+
 type generateHexStringType = (length: number) => string;
 
 export const generateHexString: generateHexStringType = (length = 24) => {

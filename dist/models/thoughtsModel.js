@@ -23,7 +23,10 @@ const fetchThoughtById = (db, id) => __awaiter(void 0, void 0, void 0, function*
         _id: new mongodb_1.ObjectId(id),
     });
     if (requestedThought === null) {
-        return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+        return Promise.reject({
+            status: 404,
+            errorMsg: "404 - thought id not found",
+        });
     }
     return requestedThought;
 });
@@ -33,7 +36,6 @@ const fetchThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, func
     const requestedThoughts = yield thoughtsCollection
         .find({ _userId: new mongodb_1.ObjectId(id) })
         .toArray();
-    console.log(requestedThoughts);
     return requestedThoughts;
 });
 exports.fetchThoughtsByUserId = fetchThoughtsByUserId;
@@ -50,7 +52,10 @@ const removeThoughtById = (db, id) => __awaiter(void 0, void 0, void 0, function
         _id: new mongodb_1.ObjectId(id),
     });
     if (!deletedCount) {
-        return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
+        return Promise.reject({
+            status: 404,
+            errorMsg: "404 - invalid thought id",
+        });
     }
 });
 exports.removeThoughtById = removeThoughtById;
@@ -60,7 +65,10 @@ const removeThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, fun
         _userId: new mongodb_1.ObjectId(id),
     });
     if (!deletedCount) {
-        return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
+        return Promise.reject({
+            status: 404,
+            errorMsg: "404 - invalid user id",
+        });
     }
 });
 exports.removeThoughtsByUserId = removeThoughtsByUserId;
@@ -68,7 +76,10 @@ const amendThoughtDetails = (db, id, updateDetails) => __awaiter(void 0, void 0,
     const thoughtsCollection = db.collection("Thoughts");
     const updatedThought = yield thoughtsCollection.findOneAndUpdate({ _id: new mongodb_1.ObjectId(id) }, { $set: Object.assign({}, updateDetails) }, { returnDocument: "after" });
     if (updatedThought === null) {
-        return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+        return Promise.reject({
+            status: 404,
+            errorMsg: "404 - thought id not found",
+        });
     }
     return updatedThought;
 });

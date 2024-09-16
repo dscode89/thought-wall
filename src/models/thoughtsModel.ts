@@ -15,7 +15,10 @@ export const fetchThoughtById = async (db: Db, id: string) => {
   });
 
   if (requestedThought === null) {
-    return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+    return Promise.reject({
+      status: 404,
+      errorMsg: "404 - thought id not found",
+    });
   }
   return requestedThought;
 };
@@ -26,7 +29,6 @@ export const fetchThoughtsByUserId = async (db: Db, id: string) => {
     .find({ _userId: new ObjectId(id) })
     .toArray();
 
-  console.log(requestedThoughts);
   return requestedThoughts;
 };
 
@@ -45,7 +47,10 @@ export const removeThoughtById = async (db: Db, id: string) => {
   });
 
   if (!deletedCount) {
-    return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
+    return Promise.reject({
+      status: 404,
+      errorMsg: "404 - invalid thought id",
+    });
   }
 };
 
@@ -56,7 +61,10 @@ export const removeThoughtsByUserId = async (db: Db, id: string) => {
   });
 
   if (!deletedCount) {
-    return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
+    return Promise.reject({
+      status: 404,
+      errorMsg: "404 - invalid user id",
+    });
   }
 };
 
@@ -73,7 +81,10 @@ export const amendThoughtDetails = async (
   );
 
   if (updatedThought === null) {
-    return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+    return Promise.reject({
+      status: 404,
+      errorMsg: "404 - thought id not found",
+    });
   }
   return updatedThought;
 };
