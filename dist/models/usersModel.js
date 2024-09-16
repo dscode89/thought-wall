@@ -47,9 +47,12 @@ const createUser = (db, user) => __awaiter(void 0, void 0, void 0, function* () 
 exports.createUser = createUser;
 const removeUser = (db, id) => __awaiter(void 0, void 0, void 0, function* () {
     const usersCollection = db.collection("Users");
-    yield usersCollection.deleteOne({
+    const { deletedCount } = yield usersCollection.deleteOne({
         _id: new mongodb_1.ObjectId(id),
     });
+    if (!deletedCount) {
+        return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+    }
 });
 exports.removeUser = removeUser;
 const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, void 0, function* () {
@@ -60,6 +63,9 @@ const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, vo
     }
     const usersCollection = db.collection("Users");
     const updatedUser = yield usersCollection.findOneAndUpdate({ _id: new mongodb_1.ObjectId(id) }, { $set: Object.assign({}, updateDetails) }, { returnDocument: "after" });
+    if (updatedUser === null) {
+        return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+    }
     return updatedUser;
 });
 exports.amendUserDetails = amendUserDetails;

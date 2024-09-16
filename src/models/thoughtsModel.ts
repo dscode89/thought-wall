@@ -8,6 +8,28 @@ export const fetchThoughts = async (db: Db) => {
   return currentThoughts;
 };
 
+export const fetchThoughtById = async (db: Db, id: string) => {
+  const thoughtsCollection = db.collection<Thought>("Thoughts");
+  const requestedThought = await thoughtsCollection.findOne({
+    _id: new ObjectId(id),
+  });
+
+  if (requestedThought === null) {
+    return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+  }
+  return requestedThought;
+};
+
+export const fetchThoughtsByUserId = async (db: Db, id: string) => {
+  const thoughtsCollection = db.collection<Thought>("Thoughts");
+  const requestedThoughts = await thoughtsCollection
+    .find({ _userId: new ObjectId(id) })
+    .toArray();
+
+  console.log(requestedThoughts);
+  return requestedThoughts;
+};
+
 export const createThought = async (db: Db, thought: Thought) => {
   const thoughtsCollection = db.collection<Thought>("Thoughts");
   const { insertedId } = await thoughtsCollection.insertOne(thought);
@@ -16,18 +38,26 @@ export const createThought = async (db: Db, thought: Thought) => {
   return newThought;
 };
 
-export const removeThought = async (db: Db, id: string) => {
+export const removeThoughtById = async (db: Db, id: string) => {
   const thoughtsCollection = db.collection<Thought>("Thoughts");
-  await thoughtsCollection.deleteOne({
+  const { deletedCount } = await thoughtsCollection.deleteOne({
     _id: new ObjectId(id),
   });
+
+  if (!deletedCount) {
+    return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
+  }
 };
 
 export const removeThoughtsByUserId = async (db: Db, id: string) => {
   const thoughtsCollection = db.collection<Thought>("Thoughts");
-  await thoughtsCollection.deleteMany({
+  const { deletedCount } = await thoughtsCollection.deleteMany({
     _userId: new ObjectId(id),
   });
+
+  if (!deletedCount) {
+    return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
+  }
 };
 
 export const amendThoughtDetails = async (
@@ -42,5 +72,8 @@ export const amendThoughtDetails = async (
     { returnDocument: "after" }
   );
 
+  if (updatedThought === null) {
+    return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+  }
   return updatedThought;
 };

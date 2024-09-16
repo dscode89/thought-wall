@@ -158,6 +158,28 @@ describe("/api/users/:user_id", () => {
           expect(users.length).toBe(4);
         });
     });
+    describe("ERRORS", () => {
+      test("404 - passed a non-existent userId", () => {
+        const nonExistentId = "66e5af35c085e74eaf5f6487";
+
+        return request(app)
+          .delete("/api/users/" + nonExistentId)
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("404 - user id not found");
+          });
+      });
+      test("400 - user id is not a valid 24 char hex string", () => {
+        const nonExistentId = "66e5af35c085e74eaf5x6487";
+
+        return request(app)
+          .delete("/api/users/" + nonExistentId)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("400 - invalid user id");
+          });
+      });
+    });
   });
   describe("PATCH", () => {
     test("PATCH: 200 - will return a user document with an updated firstName property", async () => {
@@ -299,6 +321,34 @@ describe("/api/users/:user_id", () => {
           expect(updatedUser.role).toBe("USER");
         });
     });
+    describe("ERRORS", () => {
+      test("404 - passed a non-existent userId", async () => {
+        const nonExistentId = "66e5af35c085e74eaf5f6487";
+
+        return request(app)
+          .patch("/api/users/" + nonExistentId)
+          .expect(404)
+          .send({
+            firstName: "Dave",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("404 - user id not found");
+          });
+      });
+      test("400 - user id is not a valid 24 char hex string", () => {
+        const nonExistentId = "66e5af35c085e74eaf5x6487";
+
+        return request(app)
+          .patch("/api/users/" + nonExistentId)
+          .send({
+            firstName: "Dave",
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("400 - invalid user id");
+          });
+      });
+    });
   });
 
   // error handling needed to be thought about
@@ -361,6 +411,50 @@ describe("/api/thoughts", () => {
 });
 
 describe("/api/thoughts/:thought_id", () => {
+  describe("GET", () => {
+    test("GET: 200 - returns a thought based on provided thought id", async () => {
+      const thoughts = await fetchThoughts(testDb);
+      const users = await fetchUsers(testDb);
+      const testThoughtId = thoughts[0]["_id"].toHexString();
+
+      return request(app)
+        .get("/api/thoughts/" + testThoughtId)
+        .expect(200)
+        .then(({ body }) => {
+          const thought = body.thought;
+          expect(typeof thought._id).toBe("string");
+          expect(thought).toMatchObject({
+            _userId: users[0]._id.toHexString(),
+            thoughtMessage: "Need to fix the leaking sink in the kitchen.",
+            category: "HOME",
+            isPriority: true,
+          });
+        });
+    });
+    describe("ERRORS", () => {
+      test("404 - passed a non-existent userId", async () => {
+        const nonExistentId = "66e5af35c085e74eaf5f6487";
+
+        return request(app)
+          .get("/api/thoughts/" + nonExistentId)
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("404 - user id not found");
+          });
+      });
+      test("400 - user id is not a valid 24 char hex string", async () => {
+        const nonExistentId = "66e5af35c085e74eax5f6487";
+
+        return request(app)
+          .get("/api/thoughts/" + nonExistentId)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("400 - invalid user id");
+          });
+      });
+    });
+  });
+
   describe("PATCH", () => {
     test("PATCH: 200 - will return updated thought with amended thoughtMessage", async () => {
       const thoughts = await fetchThoughts(testDb);
@@ -442,7 +536,34 @@ describe("/api/thoughts/:thought_id", () => {
           expect(updatedThought.isPriority).toBe(false);
         });
     });
+    describe("ERRORS", () => {
+      test("404 - passed a non-existent userId", async () => {
+        const nonExistentId = "66e5af35c085e74eaf5f6487";
 
+        return request(app)
+          .patch("/api/thoughts/" + nonExistentId)
+          .expect(404)
+          .send({
+            thoughtMessage: "oops",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("404 - user id not found");
+          });
+      });
+      test("400 - user id is not a valid 24 char hex string", async () => {
+        const nonExistentId = "66e5af35c085e74eax5f6487";
+
+        return request(app)
+          .patch("/api/thoughts/" + nonExistentId)
+          .expect(400)
+          .send({
+            thoughtMessage: "oops",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("400 - invalid user id");
+          });
+      });
+    });
     // error handling needed here - think about possible errors
   });
   describe("DELETE", () => {
@@ -461,12 +582,60 @@ describe("/api/thoughts/:thought_id", () => {
           expect(users.length).toBe(5);
         });
     });
+    describe("ERRORS", () => {
+      test("404 - passed a non-existent userId", async () => {
+        const nonExistentId = "66e5af35c085e74eaf5f6487";
 
+        return request(app)
+          .delete("/api/thoughts/" + nonExistentId)
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("404 - invalid user id");
+          });
+      });
+      test("400 - user id is not a valid 24 char hex string", async () => {
+        const nonExistentId = "66e5af35c085e74eax5f6487";
+
+        return request(app)
+          .delete("/api/thoughts/" + nonExistentId)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("400 - invalid user id");
+          });
+      });
+    });
     // error handling needed to be thought about
   });
 });
 
-describe("/api/thoughts/users/:user_id", () => {
+describe.only("/api/thoughts/users/:user_id", () => {
+  describe("GET", () => {
+    test("200 - will return all thoughts with a specified userId", async () => {
+      const users = await fetchUsers(testDb);
+      const testUserId = users[0]["_id"].toHexString();
+
+      return request(app)
+        .get("/api/thoughts/users/" + testUserId)
+        .expect(200)
+        .then(({ body }) => {
+          const thoughts = body.thoughts;
+          expect(thoughts.length).toBe(3);
+
+          thoughts.forEach((thought: Thought) => {
+            expect(thought._userId).toBe(users[0]._id.toHexString());
+
+            expect(thought).toEqual(
+              expect.objectContaining({
+                _id: expect.any(String),
+                thoughtMessage: expect.any(String),
+                category: expect.any(String),
+                isPriority: expect.any(Boolean),
+              })
+            );
+          });
+        });
+    });
+  });
   describe("DELETE", () => {
     test("DELETE: 204 - will delete all thought documents by a specific user from Thoughts collection", async () => {
       const thoughts = await fetchUsers(testDb);
@@ -482,6 +651,28 @@ describe("/api/thoughts/users/:user_id", () => {
         .then((users) => {
           expect(users.length).toBe(3);
         });
+    });
+    describe("ERRORS", () => {
+      test("404 - passed a non-existent userId", async () => {
+        const nonExistentId = "66e5af35c085e74eaf5f6487";
+
+        return request(app)
+          .delete("/api/thoughts/users/" + nonExistentId)
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("404 - invalid user id");
+          });
+      });
+      test("400 - user id is not a valid 24 char hex string", async () => {
+        const nonExistentId = "66e5af35c085e74eax5f6487";
+
+        return request(app)
+          .delete("/api/thoughts/users/" + nonExistentId)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("400 - invalid user id");
+          });
+      });
     });
   });
 });

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateThoughtDetails = exports.deleteThoughtsByUserId = exports.deleteThought = exports.postThought = exports.getThoughts = void 0;
+exports.updateThoughtDetails = exports.deleteThoughtsByUserId = exports.deleteThoughtById = exports.postThought = exports.getThoughtsByUserId = exports.getThoughtById = exports.getThoughts = void 0;
 const thoughtsModel_1 = require("../models/thoughtsModel");
 const mongodb_1 = require("mongodb");
 const getThoughts = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -18,6 +18,30 @@ const getThoughts = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     res.status(200).send({ thoughts: currentThoughts });
 });
 exports.getThoughts = getThoughts;
+const getThoughtById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const mongoDb = req.app.get("mongoDb");
+        const id = req.params.thought_id;
+        const requestedThought = yield (0, thoughtsModel_1.fetchThoughtById)(mongoDb, id);
+        res.status(200).send({ thought: requestedThought });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.getThoughtById = getThoughtById;
+const getThoughtsByUserId = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.user_id;
+        const mongoDb = req.app.get("mongoDb");
+        const requestedThoughts = yield (0, thoughtsModel_1.fetchThoughtsByUserId)(mongoDb, id);
+        res.status(200).send({ thoughts: requestedThoughts });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.getThoughtsByUserId = getThoughtsByUserId;
 const postThought = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const currentUserId = req.body._userId;
     const currentUserIdClassConversion = new mongodb_1.ObjectId(currentUserId);
@@ -32,18 +56,18 @@ const postThought = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.postThought = postThought;
-const deleteThought = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteThoughtById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const thoughtId = req.params.thought_id;
         const mongoDb = req.app.get("mongoDb");
-        yield (0, thoughtsModel_1.removeThought)(mongoDb, thoughtId);
+        yield (0, thoughtsModel_1.removeThoughtById)(mongoDb, thoughtId);
         res.status(204).send();
     }
     catch (error) {
         next(error);
     }
 });
-exports.deleteThought = deleteThought;
+exports.deleteThoughtById = deleteThoughtById;
 const deleteThoughtsByUserId = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.user_id;

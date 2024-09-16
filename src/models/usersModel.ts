@@ -41,9 +41,13 @@ export const createUser = async (db: Db, user: User) => {
 
 export const removeUser = async (db: Db, id: string) => {
   const usersCollection = db.collection<User>("Users");
-  await usersCollection.deleteOne({
+  const { deletedCount } = await usersCollection.deleteOne({
     _id: new ObjectId(id),
   });
+
+  if (!deletedCount) {
+    return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+  }
 };
 
 export const amendUserDetails = async (
@@ -62,6 +66,8 @@ export const amendUserDetails = async (
     { $set: { ...updateDetails } },
     { returnDocument: "after" }
   );
-
+  if (updatedUser === null) {
+    return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+  }
   return updatedUser;
 };

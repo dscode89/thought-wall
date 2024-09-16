@@ -17,8 +17,10 @@ app.delete("/api/users/:user_id", usersController_1.deleteUser);
 app.patch("/api/users/:user_id", usersController_1.updateUserDetails);
 //thoughts
 app.get("/api/thoughts", thoughtsController_1.getThoughts);
+app.get("/api/thoughts/:thought_id", thoughtsController_1.getThoughtById);
+app.get("/api/thoughts/users/:user_id", thoughtsController_1.getThoughtsByUserId);
 app.post("/api/thoughts", thoughtsController_1.postThought);
-app.delete("/api/thoughts/:thought_id", thoughtsController_1.deleteThought);
+app.delete("/api/thoughts/:thought_id", thoughtsController_1.deleteThoughtById);
 app.delete("/api/thoughts/users/:user_id", thoughtsController_1.deleteThoughtsByUserId);
 app.patch("/api/thoughts/:thought_id", thoughtsController_1.updateThoughtDetails);
 //error handling
