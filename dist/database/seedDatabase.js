@@ -14,88 +14,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const thoughts_1 = __importDefault(require("./test-data/thoughts"));
 const users_1 = __importDefault(require("./test-data/users"));
+const schemaValidationIndex_1 = require("./schemaValidationIndex");
 function seedTestDatabase(db) {
     return __awaiter(this, void 0, void 0, function* () {
         yield db.collection("Users").drop();
         yield db.collection("Thoughts").drop();
         yield db.createCollection("Users", {
-            validator: {
-                $jsonSchema: {
-                    title: "User Document Validation",
-                    required: [
-                        "_id",
-                        "firstName",
-                        "lastName",
-                        "preferredName",
-                        "role",
-                        "userPassword",
-                        "email",
-                    ],
-                    additionalProperties: false,
-                    properties: {
-                        _id: {
-                            bsonType: "objectId",
-                            description: "This is the generated ObjectId instance for a new inserted user document",
-                        },
-                        firstName: {
-                            bsonType: "string",
-                            description: "'firstName' must be a string and is required",
-                        },
-                        lastName: {
-                            bsonType: "string",
-                            description: "'lastName' must be a string and is required",
-                        },
-                        preferredName: {
-                            bsonType: "string",
-                            description: "'preferredName' must be a string and is required",
-                        },
-                        role: {
-                            bsonType: "string",
-                            description: "'firstName' must be a string of ADMIN or USER",
-                        },
-                        userPassword: {
-                            bsonType: "string",
-                            description: "'userPassword' must be a string and is required",
-                        },
-                        email: {
-                            bsonType: "string",
-                            description: "'email' must be a string and is required",
-                        },
-                    },
-                },
-            },
+            validator: schemaValidationIndex_1.userValidationSchema,
         });
         yield db.createCollection("Thoughts", {
             // why does this ignore the _user validation if it is not provided?
-            validator: {
-                $jsonSchema: {
-                    title: "Thought Document Validation",
-                    required: ["_id", "userId", "thoughtMessage", "category", "isPriority"],
-                    additionalProperties: false,
-                    properties: {
-                        _id: {
-                            bsonType: "objectId",
-                            description: "This is the generated ObjectId instance for a new inserted thought document",
-                        },
-                        userId: {
-                            bsonType: "objectId",
-                            description: "this is the objectId for the user who posted this thought",
-                        },
-                        thoughtMessage: {
-                            bsonType: "string",
-                            description: "thoughtMessage must be a string and is required",
-                        },
-                        category: {
-                            bsonType: "string",
-                            description: "'category' must be a string and of of the following values: BILLS | HOME | GENERAL",
-                        },
-                        isPriority: {
-                            bsonType: "bool",
-                            description: "'isPriority' must be a boolean and is required",
-                        },
-                    },
-                },
-            },
+            validator: schemaValidationIndex_1.thoughtValidationSchema,
         });
         yield db.collection("Users").insertMany(users_1.default);
         const instertedUsers = yield db.collection("Users").find().toArray();
