@@ -46,6 +46,15 @@ const fetchThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, func
 });
 exports.fetchThoughtsByUserId = fetchThoughtsByUserId;
 const createThought = (db, thought) => __awaiter(void 0, void 0, void 0, function* () {
+    if (thought.category) {
+        const thoughtCategoryWhitelist = ["HOME", "GENERAL", "BILLS"];
+        if (!thoughtCategoryWhitelist.includes(thought.category)) {
+            return Promise.reject({
+                status: 400,
+                errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+            });
+        }
+    }
     const thoughtsCollection = db.collection("Thoughts");
     const { insertedId } = yield thoughtsCollection.insertOne(thought);
     const newThought = yield thoughtsCollection.findOne({ _id: insertedId });
@@ -84,6 +93,15 @@ const amendThoughtDetails = (db, id, updateDetails) => __awaiter(void 0, void 0,
             status: 400,
             errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
         });
+    }
+    if (updateDetails.category) {
+        const thoughtCategoryWhitelist = ["HOME", "GENERAL", "BILLS"];
+        if (!thoughtCategoryWhitelist.includes(updateDetails.category)) {
+            return Promise.reject({
+                status: 400,
+                errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+            });
+        }
     }
     if (updateDetails.userId || updateDetails._id) {
         return Promise.reject({

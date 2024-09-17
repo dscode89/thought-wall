@@ -35,6 +35,13 @@ const fetchUserByUserId = (db, id) => __awaiter(void 0, void 0, void 0, function
 });
 exports.fetchUserByUserId = fetchUserByUserId;
 const createUser = (db, user) => __awaiter(void 0, void 0, void 0, function* () {
+    const userRoleWhiteList = ["ADMIN", "USER"];
+    if (!userRoleWhiteList.includes(user.role)) {
+        return Promise.reject({
+            status: 400,
+            errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+        });
+    }
     // get the Users collection from chosen database
     const usersCollection = db.collection("Users");
     // this will return a cluster object so use toArray() to give you an array of users
@@ -67,6 +74,15 @@ const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, vo
             status: 400,
             errorMsg: "400 - cannot change this property",
         });
+    }
+    if (updateDetails.role) {
+        const userRoleWhiteList = ["ADMIN", "USER"];
+        if (!userRoleWhiteList.includes(updateDetails.role)) {
+            return Promise.reject({
+                status: 400,
+                errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+            });
+        }
     }
     if (updateDetails.userPassword) {
         const salt = bcryptjs_1.default.genSaltSync(10);

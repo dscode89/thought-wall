@@ -133,6 +133,22 @@ describe("/api/users", () => {
                     expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
                 });
             });
+            test("POST: 400 - invalid USER Role - must be ADMIN or USER", () => {
+                return (0, supertest_1.default)(app_1.default)
+                    .post("/api/users")
+                    .expect(400)
+                    .send({
+                    firstName: "Ashlyn",
+                    lastName: "Lovatt",
+                    preferredName: "Ash",
+                    role: "GHOST",
+                    userPassword: "securepass458",
+                    email: "no@cheese.com",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            });
         });
     });
 });
@@ -360,6 +376,19 @@ describe("/api/users/:user_id", () => {
                     expect(body.errorMsg).toBe("404 - invalid user id");
                 });
             }));
+            test("400 - attempting to change user.role to be something other than ADMIN or USER", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/users/" + testUserId)
+                    .expect(400)
+                    .send({
+                    role: "GHOST",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
             test("400 - user id is not a valid 24 char hex string", () => {
                 const nonExistentId = "66e5af35c085e74eaf5x6487";
                 return (0, supertest_1.default)(app_1.default)
@@ -496,6 +525,22 @@ describe("/api/thoughts", () => {
                     isPriority: false,
                     thoughtMessage: "I need to pay my billy bills",
                     hungry: true,
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("POST: 400 - invalid value for category - must be either BILLS, GENERAL or HOME", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"];
+                return (0, supertest_1.default)(app_1.default)
+                    .post("/api/thoughts")
+                    .expect(400)
+                    .send({
+                    userId: testUserId.toHexString(),
+                    category: "GHOST",
+                    isPriority: false,
+                    thoughtMessage: "I need to pay my billy bills",
                 })
                     .then(({ body }) => {
                     expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
@@ -692,6 +737,21 @@ describe("/api/thoughts/:thought_id", () => {
                     isPriority: false,
                     category: "ADMIN",
                     isInUncomfortableseat: true,
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("400 - attempting to patch the thought.category property to something other than HOME, GENERAL or BILLS", () => __awaiter(void 0, void 0, void 0, function* () {
+                const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
+                const testThoughtId = thoughts[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/thoughts/" + testThoughtId)
+                    .expect(400)
+                    .send({
+                    thoughtMessage: "I love thoughts",
+                    isPriority: false,
+                    category: "GHOST",
                 })
                     .then(({ body }) => {
                     expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
