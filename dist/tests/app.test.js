@@ -117,7 +117,7 @@ describe("/api/users", () => {
                     expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
                 });
             });
-            test("POST: 400 - invalid types for values on request body", () => {
+            test("POST: 400 - invalid types for required values on request body", () => {
                 return (0, supertest_1.default)(app_1.default)
                     .post("/api/users")
                     .expect(400)

@@ -122,7 +122,7 @@ describe("/api/users", () => {
             );
           });
       });
-      test("POST: 400 - invalid types for values on request body", () => {
+      test("POST: 400 - invalid types for required values on request body", () => {
         return request(app)
           .post("/api/users")
           .expect(400)
