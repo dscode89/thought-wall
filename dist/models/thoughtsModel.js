@@ -25,7 +25,7 @@ const fetchThoughtById = (db, id) => __awaiter(void 0, void 0, void 0, function*
     if (requestedThought === null) {
         return Promise.reject({
             status: 404,
-            errorMsg: "404 - thought id not found",
+            errorMsg: "404 - invalid thought id",
         });
     }
     return requestedThought;
@@ -36,6 +36,12 @@ const fetchThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, func
     const requestedThoughts = yield thoughtsCollection
         .find({ userId: new mongodb_1.ObjectId(id) })
         .toArray();
+    if (!requestedThoughts.length) {
+        return Promise.reject({
+            status: 404,
+            errorMsg: "404 - invalid thought id",
+        });
+    }
     return requestedThoughts;
 });
 exports.fetchThoughtsByUserId = fetchThoughtsByUserId;
@@ -84,7 +90,7 @@ const amendThoughtDetails = (db, id, updateDetails) => __awaiter(void 0, void 0,
     if (updatedThought === null) {
         return Promise.reject({
             status: 404,
-            errorMsg: "404 - thought id not found",
+            errorMsg: "404 - invalid thought id",
         });
     }
     return updatedThought;

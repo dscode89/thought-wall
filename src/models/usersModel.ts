@@ -18,7 +18,7 @@ export const fetchUserByUserId = async (db: Db, id: string) => {
   });
 
   if (requestedUser === null) {
-    return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+    return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
   }
   return requestedUser;
 };
@@ -45,7 +45,7 @@ export const removeUser = async (db: Db, id: string) => {
   });
 
   if (!deletedCount) {
-    return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+    return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
   }
 };
 
@@ -73,7 +73,7 @@ export const amendUserDetails = async (
   );
 
   if (updatedUser === null) {
-    return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+    return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
   }
   return updatedUser;
 };

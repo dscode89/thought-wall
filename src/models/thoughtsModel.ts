@@ -17,7 +17,7 @@ export const fetchThoughtById = async (db: Db, id: string) => {
   if (requestedThought === null) {
     return Promise.reject({
       status: 404,
-      errorMsg: "404 - thought id not found",
+      errorMsg: "404 - invalid thought id",
     });
   }
   return requestedThought;
@@ -29,6 +29,12 @@ export const fetchThoughtsByUserId = async (db: Db, id: string) => {
     .find({ userId: new ObjectId(id) })
     .toArray();
 
+  if (!requestedThoughts.length) {
+    return Promise.reject({
+      status: 404,
+      errorMsg: "404 - invalid thought id",
+    });
+  }
   return requestedThoughts;
 };
 
@@ -91,7 +97,7 @@ export const amendThoughtDetails = async (
   if (updatedThought === null) {
     return Promise.reject({
       status: 404,
-      errorMsg: "404 - thought id not found",
+      errorMsg: "404 - invalid thought id",
     });
   }
   return updatedThought;

@@ -29,7 +29,7 @@ const fetchUserByUserId = (db, id) => __awaiter(void 0, void 0, void 0, function
         _id: new mongodb_1.ObjectId(id),
     });
     if (requestedUser === null) {
-        return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+        return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
     }
     return requestedUser;
 });
@@ -51,7 +51,7 @@ const removeUser = (db, id) => __awaiter(void 0, void 0, void 0, function* () {
         _id: new mongodb_1.ObjectId(id),
     });
     if (!deletedCount) {
-        return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+        return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
     }
 });
 exports.removeUser = removeUser;
@@ -70,7 +70,7 @@ const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, vo
     const usersCollection = db.collection("Users");
     const updatedUser = yield usersCollection.findOneAndUpdate({ _id: new mongodb_1.ObjectId(id) }, { $set: Object.assign({}, updateDetails) }, { returnDocument: "after" });
     if (updatedUser === null) {
-        return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
+        return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
     }
     return updatedUser;
 });

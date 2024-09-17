@@ -164,7 +164,7 @@ describe("/api/users/:user_id", () => {
                     .get("/api/users/" + nonExistentId)
                     .expect(404)
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - user id not found");
+                    expect(body.errorMsg).toBe("404 - invalid user id");
                 });
             }));
             test("400 - user id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -199,7 +199,7 @@ describe("/api/users/:user_id", () => {
                     .delete("/api/users/" + nonExistentId)
                     .expect(404)
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - user id not found");
+                    expect(body.errorMsg).toBe("404 - invalid user id");
                 });
             });
             test("400 - user id is not a valid 24 char hex string", () => {
@@ -344,7 +344,7 @@ describe("/api/users/:user_id", () => {
                     firstName: "Dave",
                 })
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - user id not found");
+                    expect(body.errorMsg).toBe("404 - invalid user id");
                 });
             }));
             test("400 - user id is not a valid 24 char hex string", () => {
@@ -535,7 +535,7 @@ describe("/api/thoughts/:thought_id", () => {
                     .get("/api/thoughts/" + nonExistentId)
                     .expect(404)
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - thought id not found");
+                    expect(body.errorMsg).toBe("404 - invalid thought id");
                 });
             }));
             test("400 - thought id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -627,7 +627,7 @@ describe("/api/thoughts/:thought_id", () => {
                     thoughtMessage: "oops",
                 })
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - thought id not found");
+                    expect(body.errorMsg).toBe("404 - invalid thought id");
                 });
             }));
             test("400 - thought id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -746,6 +746,26 @@ describe("/api/thoughts/users/:user_id", () => {
                 });
             });
         }));
+        describe("ERRORS", () => {
+            test("404 - passed a non-existent userId", () => __awaiter(void 0, void 0, void 0, function* () {
+                const nonExistentId = "66e5af35c085e74eaf5f6487";
+                return (0, supertest_1.default)(app_1.default)
+                    .get("/api/thoughts/users/" + nonExistentId)
+                    .expect(404)
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("404 - invalid thought id");
+                });
+            }));
+            test("400 - user id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {
+                const nonExistentId = "66e5af35c085e74eax5f6487";
+                return (0, supertest_1.default)(app_1.default)
+                    .get("/api/thoughts/users/" + nonExistentId)
+                    .expect(400)
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - invalid id provided");
+                });
+            }));
+        });
     });
     describe("DELETE", () => {
         test("DELETE: 204 - will delete all thought documents by a specific user from Thoughts collection", () => __awaiter(void 0, void 0, void 0, function* () {
