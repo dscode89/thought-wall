@@ -62,7 +62,13 @@ const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, vo
             errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
         });
     }
-    else if (updateDetails.userPassword) {
+    if (updateDetails._id) {
+        return Promise.reject({
+            status: 400,
+            errorMsg: "400 - cannot change this property",
+        });
+    }
+    if (updateDetails.userPassword) {
         const salt = bcryptjs_1.default.genSaltSync(10);
         const hash = bcryptjs_1.default.hashSync(updateDetails.userPassword, salt);
         updateDetails.userPassword = hash;

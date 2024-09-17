@@ -20,6 +20,8 @@ export interface PatchThoughtObjType {
   thoughtMessage?: string;
   isPriority?: boolean;
   category?: "BILLS" | "GENERAL" | "HOME";
+  userId?: ObjectId;
+  _id?: ObjectId;
 }
 
 export interface PatchUserObjType {
@@ -29,4 +31,5 @@ export interface PatchUserObjType {
   role?: "ADMIN" | "USER";
   userPassword?: string;
   email?: string;
+  _id: ObjectId;
 }

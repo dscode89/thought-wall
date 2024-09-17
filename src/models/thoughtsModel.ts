@@ -87,6 +87,13 @@ export const amendThoughtDetails = async (
     });
   }
 
+  if (updateDetails.userId || updateDetails._id) {
+    return Promise.reject({
+      status: 400,
+      errorMsg: "400 - cannot change this property",
+    });
+  }
+
   const thoughtsCollection = db.collection<Thought>("Thoughts");
   const updatedThought = await thoughtsCollection.findOneAndUpdate(
     { _id: new ObjectId(id) },

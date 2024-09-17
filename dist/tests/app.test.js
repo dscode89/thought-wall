@@ -335,6 +335,19 @@ describe("/api/users/:user_id", () => {
             });
         }));
         describe("ERRORS", () => {
+            test("400 - attempting to patch user._id", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/users/" + testUserId)
+                    .expect(400)
+                    .send({
+                    _id: "jam",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - cannot change this property");
+                });
+            }));
             test("404 - passed a non-existent userId", () => __awaiter(void 0, void 0, void 0, function* () {
                 const nonExistentId = "66e5af35c085e74eaf5f6487";
                 return (0, supertest_1.default)(app_1.default)
@@ -628,6 +641,32 @@ describe("/api/thoughts/:thought_id", () => {
                 })
                     .then(({ body }) => {
                     expect(body.errorMsg).toBe("404 - invalid thought id");
+                });
+            }));
+            test("400 - attempting to patch thought.userId", () => __awaiter(void 0, void 0, void 0, function* () {
+                const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
+                const testThoughtId = thoughts[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/thoughts/" + testThoughtId)
+                    .expect(400)
+                    .send({
+                    userId: "jam",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - cannot change this property");
+                });
+            }));
+            test("400 - attempting to patch thought._id", () => __awaiter(void 0, void 0, void 0, function* () {
+                const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
+                const testThoughtId = thoughts[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/thoughts/" + testThoughtId)
+                    .expect(400)
+                    .send({
+                    _id: "jam",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - cannot change this property");
                 });
             }));
             test("400 - thought id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {

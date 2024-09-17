@@ -85,6 +85,12 @@ const amendThoughtDetails = (db, id, updateDetails) => __awaiter(void 0, void 0,
             errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
         });
     }
+    if (updateDetails.userId || updateDetails._id) {
+        return Promise.reject({
+            status: 400,
+            errorMsg: "400 - cannot change this property",
+        });
+    }
     const thoughtsCollection = db.collection("Thoughts");
     const updatedThought = yield thoughtsCollection.findOneAndUpdate({ _id: new mongodb_1.ObjectId(id) }, { $set: Object.assign({}, updateDetails) }, { returnDocument: "after" });
     if (updatedThought === null) {
