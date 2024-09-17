@@ -8,37 +8,37 @@ import { ObjectId } from "mongodb";
 */
 export default [
   {
-    _userId: new ObjectId(generateHexString(24)),
+    userId: new ObjectId(generateHexString(24)),
     thoughtMessage: "Need to fix the leaking sink in the kitchen.",
     category: "HOME",
     isPriority: true,
   },
   {
-    _userId: new ObjectId(generateHexString(24)),
+    userId: new ObjectId(generateHexString(24)),
     thoughtMessage: "Pay the electricity bill by next Monday.",
     category: "BILLS",
     isPriority: true,
   },
   {
-    _userId: new ObjectId(generateHexString(24)),
+    userId: new ObjectId(generateHexString(24)),
     thoughtMessage: "Buy groceries for the week.",
     category: "GENERAL",
     isPriority: true,
   },
   {
-    _userId: new ObjectId(generateHexString(24)),
+    userId: new ObjectId(generateHexString(24)),
     thoughtMessage: "Schedule the internet service upgrade.",
     category: "BILLS",
     isPriority: true,
   },
   {
-    _userId: new ObjectId(generateHexString(24)),
+    userId: new ObjectId(generateHexString(24)),
     thoughtMessage: "Clean the garage this weekend.",
     category: "HOME",
     isPriority: true,
   },
   {
-    _userId: new ObjectId(generateHexString(24)),
+    userId: new ObjectId(generateHexString(24)),
     thoughtMessage: "Call the bank about mortgage adjustments.",
     category: "GENERAL",
     isPriority: true,

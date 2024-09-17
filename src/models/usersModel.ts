@@ -35,7 +35,6 @@ export const createUser = async (db: Db, user: User) => {
     userPassword: hash,
   });
   const newUser = await usersCollection.findOne({ _id: insertedId });
-
   return newUser;
 };
 
@@ -55,7 +54,13 @@ export const amendUserDetails = async (
   id: string,
   updateDetails: PatchUserObjType
 ) => {
-  if (updateDetails.userPassword) {
+  if (!Object.keys(updateDetails).length) {
+    return Promise.reject({
+      status: 400,
+      errorMsg:
+        "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+    });
+  } else if (updateDetails.userPassword) {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(updateDetails.userPassword, salt);
     updateDetails.userPassword = hash;
@@ -66,6 +71,7 @@ export const amendUserDetails = async (
     { $set: { ...updateDetails } },
     { returnDocument: "after" }
   );
+
   if (updatedUser === null) {
     return Promise.reject({ status: 404, errorMsg: "404 - user id not found" });
   }

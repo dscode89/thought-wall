@@ -56,12 +56,17 @@ export const postThought = async (
   res: Response,
   next: NextFunction
 ) => {
-  const currentUserId = req.body._userId;
-  const currentUserIdClassConversion = new ObjectId(currentUserId);
-
-  req.body._userId = currentUserIdClassConversion;
-
   try {
+    const currentUserId = req.body.userId;
+
+    /* if no userId provided on request body, then don't add that property to the request body
+         - this will fail the validation set up on the mongoDb schema for the test database
+    */
+    if (currentUserId) {
+      const currentUserIdClassConversion = new ObjectId(currentUserId);
+      req.body.userId = currentUserIdClassConversion;
+    }
+
     const mongoDb: Db = req.app.get("mongoDb");
     const newThought = await createThought(mongoDb, req.body);
     res.status(201).send({ thought: newThought });

@@ -43,10 +43,15 @@ const getThoughtsByUserId = (req, res, next) => __awaiter(void 0, void 0, void 0
 });
 exports.getThoughtsByUserId = getThoughtsByUserId;
 const postThought = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const currentUserId = req.body._userId;
-    const currentUserIdClassConversion = new mongodb_1.ObjectId(currentUserId);
-    req.body._userId = currentUserIdClassConversion;
     try {
+        const currentUserId = req.body.userId;
+        /* if no userId provided on request body, then don't add that property to the request body
+             - this will fail the validation set up on the mongoDb schema for the test database
+        */
+        if (currentUserId) {
+            const currentUserIdClassConversion = new mongodb_1.ObjectId(currentUserId);
+            req.body.userId = currentUserIdClassConversion;
+        }
         const mongoDb = req.app.get("mongoDb");
         const newThought = yield (0, thoughtsModel_1.createThought)(mongoDb, req.body);
         res.status(201).send({ thought: newThought });

@@ -66,23 +66,18 @@ function seedTestDatabase(db) {
             },
         });
         yield db.createCollection("Thoughts", {
+            // why does this ignore the _user validation if it is not provided?
             validator: {
                 $jsonSchema: {
                     title: "Thought Document Validation",
-                    required: [
-                        "_id",
-                        "_userId",
-                        "thoughtMessage",
-                        "category",
-                        "isPriority",
-                    ],
+                    required: ["_id", "userId", "thoughtMessage", "category", "isPriority"],
                     additionalProperties: false,
                     properties: {
                         _id: {
                             bsonType: "objectId",
                             description: "This is the generated ObjectId instance for a new inserted thought document",
                         },
-                        _userId: {
+                        userId: {
                             bsonType: "objectId",
                             description: "this is the objectId for the user who posted this thought",
                         },
@@ -108,10 +103,10 @@ function seedTestDatabase(db) {
         const secondUserId = instertedUsers[1]["_id"];
         thoughts_1.default.forEach((thought, i) => {
             if (i % 2 === 0) {
-                thought._userId = firstUserId;
+                thought.userId = firstUserId;
             }
             else {
-                thought._userId = secondUserId;
+                thought.userId = secondUserId;
             }
         });
         yield db.collection("Thoughts").insertMany(thoughts_1.default);

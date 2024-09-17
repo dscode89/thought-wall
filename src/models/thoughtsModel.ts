@@ -26,7 +26,7 @@ export const fetchThoughtById = async (db: Db, id: string) => {
 export const fetchThoughtsByUserId = async (db: Db, id: string) => {
   const thoughtsCollection = db.collection<Thought>("Thoughts");
   const requestedThoughts = await thoughtsCollection
-    .find({ _userId: new ObjectId(id) })
+    .find({ userId: new ObjectId(id) })
     .toArray();
 
   return requestedThoughts;
@@ -57,7 +57,7 @@ export const removeThoughtById = async (db: Db, id: string) => {
 export const removeThoughtsByUserId = async (db: Db, id: string) => {
   const thoughtsCollection = db.collection<Thought>("Thoughts");
   const { deletedCount } = await thoughtsCollection.deleteMany({
-    _userId: new ObjectId(id),
+    userId: new ObjectId(id),
   });
 
   if (!deletedCount) {
@@ -73,6 +73,14 @@ export const amendThoughtDetails = async (
   id: string,
   updateDetails: PatchThoughtObjType
 ) => {
+  if (!Object.keys(updateDetails).length) {
+    return Promise.reject({
+      status: 400,
+      errorMsg:
+        "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+    });
+  }
+
   const thoughtsCollection = db.collection<Thought>("Thoughts");
   const updatedThought = await thoughtsCollection.findOneAndUpdate(
     { _id: new ObjectId(id) },

@@ -58,13 +58,7 @@ async function seedTestDatabase(db: Db) {
     validator: {
       $jsonSchema: {
         title: "Thought Document Validation",
-        required: [
-          "_id",
-          "_userId",
-          "thoughtMessage",
-          "category",
-          "isPriority",
-        ],
+        required: ["_id", "userId", "thoughtMessage", "category", "isPriority"],
         additionalProperties: false,
         properties: {
           _id: {
@@ -72,7 +66,7 @@ async function seedTestDatabase(db: Db) {
             description:
               "This is the generated ObjectId instance for a new inserted thought document",
           },
-          _userId: {
+          userId: {
             bsonType: "objectId",
             description:
               "this is the objectId for the user who posted this thought",
@@ -104,9 +98,9 @@ async function seedTestDatabase(db: Db) {
 
   thoughts.forEach((thought, i) => {
     if (i % 2 === 0) {
-      thought._userId = firstUserId;
+      thought.userId = firstUserId;
     } else {
-      thought._userId = secondUserId;
+      thought.userId = secondUserId;
     }
   });
   await db.collection("Thoughts").insertMany(thoughts);

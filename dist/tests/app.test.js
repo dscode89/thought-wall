@@ -135,7 +135,6 @@ describe("/api/users", () => {
             });
         });
     });
-    // error handling needed for post request
 });
 describe("/api/users/:user_id", () => {
     describe("GET", () => {
@@ -360,9 +359,56 @@ describe("/api/users/:user_id", () => {
                     expect(body.errorMsg).toBe("400 - invalid id provided");
                 });
             });
+            test("400 - miscellaneous properties included on request body", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/users/" + testUserId)
+                    .expect(400)
+                    .send({
+                    userPassword: "ILoveEggsBenni",
+                    email: "eggsBenni@gmail.com",
+                    firstName: "Egg",
+                    lastName: "Benni",
+                    preferredName: "Benni Eggs",
+                    role: "USER",
+                    favFood: "Egg benni!",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("400 - invalid request body property values", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/users/" + testUserId)
+                    .expect(400)
+                    .send({
+                    userPassword: "ILoveEggsBenni",
+                    email: "eggsBenni@gmail.com",
+                    firstName: 4,
+                    lastName: "Benni",
+                    preferredName: "Benni Eggs",
+                    role: true,
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("400 - empty request body", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/users/" + testUserId)
+                    .expect(400)
+                    .send({})
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
         });
     });
-    // error handling needed to be thought about
 });
 describe("/api/thoughts", () => {
     describe("GET", () => {
@@ -392,14 +438,14 @@ describe("/api/thoughts", () => {
                 .post("/api/thoughts")
                 .expect(201)
                 .send({
-                _userId: testUserId.toHexString(),
+                userId: testUserId.toHexString(),
                 category: "BILLS",
                 isPriority: false,
                 thoughtMessage: "I need to pay my billy bills",
             })
                 .then(({ body }) => {
                 expect(body.thought).toMatchObject({
-                    _userId: testUserId.toHexString(),
+                    userId: testUserId.toHexString(),
                     category: "BILLS",
                     isPriority: false,
                     thoughtMessage: "I need to pay my billy bills",
@@ -413,15 +459,13 @@ describe("/api/thoughts", () => {
         }));
         describe("ERRORS", () => {
             test("POST: 400 - missing properties from request body", () => __awaiter(void 0, void 0, void 0, function* () {
-                const users = yield (0, usersModel_1.fetchUsers)(testDb);
-                const testUserId = users[0]["_id"];
                 return (0, supertest_1.default)(app_1.default)
                     .post("/api/thoughts")
                     .expect(400)
                     .send({
-                    _userId: testUserId.toHexString(),
                     category: "BILLS",
                     isPriority: true,
+                    thoughtMessage: "I need to pay my billy bills",
                 })
                     .then(({ body }) => {
                     expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
@@ -434,7 +478,7 @@ describe("/api/thoughts", () => {
                     .post("/api/thoughts")
                     .expect(400)
                     .send({
-                    _userId: testUserId.toHexString(),
+                    userId: testUserId.toHexString(),
                     category: "BILLS",
                     isPriority: false,
                     thoughtMessage: "I need to pay my billy bills",
@@ -451,7 +495,7 @@ describe("/api/thoughts", () => {
                     .post("/api/thoughts")
                     .expect(400)
                     .send({
-                    _userId: testUserId.toHexString(),
+                    userId: testUserId.toHexString(),
                     category: false,
                     isPriority: 9,
                     thoughtMessage: "I need to pay my billy bills",
@@ -477,7 +521,7 @@ describe("/api/thoughts/:thought_id", () => {
                 const thought = body.thought;
                 expect(typeof thought._id).toBe("string");
                 expect(thought).toMatchObject({
-                    _userId: users[0]._id.toHexString(),
+                    userId: users[0]._id.toHexString(),
                     thoughtMessage: "Need to fix the leaking sink in the kitchen.",
                     category: "HOME",
                     isPriority: true,
@@ -598,6 +642,48 @@ describe("/api/thoughts/:thought_id", () => {
                     expect(body.errorMsg).toBe("400 - invalid id provided");
                 });
             }));
+            test("400 - miscellaneous properties included on request body", () => __awaiter(void 0, void 0, void 0, function* () {
+                const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
+                const testThoughtId = thoughts[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/thoughts/" + testThoughtId)
+                    .expect(400)
+                    .send({
+                    thoughtMessage: "I love thoughts",
+                    isPriority: false,
+                    category: "ADMIN",
+                    isInUncomfortableseat: true,
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("400 - invalid request body property values", () => __awaiter(void 0, void 0, void 0, function* () {
+                const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
+                const testThoughtId = thoughts[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/thoughts/" + testThoughtId)
+                    .expect(400)
+                    .send({
+                    thoughtMessage: 0,
+                    isPriority: "false",
+                    category: true,
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("400 - empty request body", () => __awaiter(void 0, void 0, void 0, function* () {
+                const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
+                const testThoughtId = thoughts[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/thoughts/" + testThoughtId)
+                    .expect(400)
+                    .send({})
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
         });
         // error handling needed here - think about possible errors
     });
@@ -650,7 +736,7 @@ describe("/api/thoughts/users/:user_id", () => {
                 const thoughts = body.thoughts;
                 expect(thoughts.length).toBe(3);
                 thoughts.forEach((thought) => {
-                    expect(thought._userId).toBe(users[0]._id.toHexString());
+                    expect(thought.userId).toBe(users[0]._id.toHexString());
                     expect(thought).toEqual(expect.objectContaining({
                         _id: expect.any(String),
                         thoughtMessage: expect.any(String),

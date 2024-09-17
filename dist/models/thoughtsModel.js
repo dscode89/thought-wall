@@ -34,7 +34,7 @@ exports.fetchThoughtById = fetchThoughtById;
 const fetchThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, function* () {
     const thoughtsCollection = db.collection("Thoughts");
     const requestedThoughts = yield thoughtsCollection
-        .find({ _userId: new mongodb_1.ObjectId(id) })
+        .find({ userId: new mongodb_1.ObjectId(id) })
         .toArray();
     return requestedThoughts;
 });
@@ -62,7 +62,7 @@ exports.removeThoughtById = removeThoughtById;
 const removeThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, function* () {
     const thoughtsCollection = db.collection("Thoughts");
     const { deletedCount } = yield thoughtsCollection.deleteMany({
-        _userId: new mongodb_1.ObjectId(id),
+        userId: new mongodb_1.ObjectId(id),
     });
     if (!deletedCount) {
         return Promise.reject({
@@ -73,6 +73,12 @@ const removeThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.removeThoughtsByUserId = removeThoughtsByUserId;
 const amendThoughtDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!Object.keys(updateDetails).length) {
+        return Promise.reject({
+            status: 400,
+            errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+        });
+    }
     const thoughtsCollection = db.collection("Thoughts");
     const updatedThought = yield thoughtsCollection.findOneAndUpdate({ _id: new mongodb_1.ObjectId(id) }, { $set: Object.assign({}, updateDetails) }, { returnDocument: "after" });
     if (updatedThought === null) {

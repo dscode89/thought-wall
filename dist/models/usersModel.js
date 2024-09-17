@@ -56,7 +56,13 @@ const removeUser = (db, id) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.removeUser = removeUser;
 const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, void 0, function* () {
-    if (updateDetails.userPassword) {
+    if (!Object.keys(updateDetails).length) {
+        return Promise.reject({
+            status: 400,
+            errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+        });
+    }
+    else if (updateDetails.userPassword) {
         const salt = bcryptjs_1.default.genSaltSync(10);
         const hash = bcryptjs_1.default.hashSync(updateDetails.userPassword, salt);
         updateDetails.userPassword = hash;
