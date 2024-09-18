@@ -491,7 +491,9 @@ describe("/api/users/:user_id", () => {
           .get("/api/users/" + nonExistentId)
           .expect(400)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid id provided");
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
           });
       });
     });
@@ -530,7 +532,9 @@ describe("/api/users/:user_id", () => {
           .delete("/api/users/" + nonExistentId)
           .expect(400)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid id provided");
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
           });
       });
     });
@@ -676,105 +680,6 @@ describe("/api/users/:user_id", () => {
         });
     });
     describe("ERRORS", () => {
-      test("PATCH: 400 - attempting to patch user._id", async () => {
-        const users = await fetchUsers(testDb);
-        const testUserId = users[0]["_id"].toHexString();
-
-        return request(app)
-          .patch("/api/users/" + testUserId)
-          .expect(400)
-          .send({
-            _id: "jam",
-          })
-          .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - cannot change this property");
-          });
-      });
-      test("PATCH: 404 - passed a valid 24 char hex string but it is a non-existent userId", async () => {
-        const nonExistentId = "66e5af35c085e74eaf5f6487";
-
-        return request(app)
-          .patch("/api/users/" + nonExistentId)
-          .expect(404)
-          .send({
-            firstName: "Dave",
-          })
-          .then(({ body }) => {
-            expect(body.errorMsg).toBe("404 - invalid user id");
-          });
-      });
-      test("PATCH: 400 - attempting to change user.role to be something other than ADMIN or USER", async () => {
-        const users = await fetchUsers(testDb);
-        const testUserId = users[0]["_id"].toHexString();
-
-        return request(app)
-          .patch("/api/users/" + testUserId)
-          .expect(400)
-          .send({
-            role: "GHOST",
-          })
-          .then(({ body }) => {
-            expect(body.errorMsg).toBe(
-              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
-            );
-          });
-      });
-      test("PATCH: 400 - user id is not a valid 24 char hex string", () => {
-        const nonExistentId = "66e5af35c085e74eaf5x6487";
-
-        return request(app)
-          .patch("/api/users/" + nonExistentId)
-          .send({
-            firstName: "Dave",
-          })
-          .expect(400)
-          .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid id provided");
-          });
-      });
-      test("PATCH: 400 - miscellaneous properties included on request body", async () => {
-        const users = await fetchUsers(testDb);
-        const testUserId = users[0]["_id"].toHexString();
-
-        return request(app)
-          .patch("/api/users/" + testUserId)
-          .expect(400)
-          .send({
-            userPassword: "ILoveEggsBenni",
-            email: "eggsBenni@gmail.com",
-            firstName: "Egg",
-            lastName: "Benni",
-            preferredName: "Benni Eggs",
-            role: "USER",
-            favFood: "Egg benni!",
-          })
-          .then(({ body }) => {
-            expect(body.errorMsg).toBe(
-              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
-            );
-          });
-      });
-      test("PATCH: 400 - invalid request body property values", async () => {
-        const users = await fetchUsers(testDb);
-        const testUserId = users[0]["_id"].toHexString();
-
-        return request(app)
-          .patch("/api/users/" + testUserId)
-          .expect(400)
-          .send({
-            userPassword: "ILoveEggsBenni",
-            email: "eggsBenni@gmail.com",
-            firstName: 4,
-            lastName: "Benni",
-            preferredName: "Benni Eggs",
-            role: true,
-          })
-          .then(({ body }) => {
-            expect(body.errorMsg).toBe(
-              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
-            );
-          });
-      });
       test("PATCH: 400 - empty request body", async () => {
         const users = await fetchUsers(testDb);
         const testUserId = users[0]["_id"].toHexString();
@@ -789,7 +694,7 @@ describe("/api/users/:user_id", () => {
             );
           });
       });
-      test("PATCH: 400 - empty firstName property(must be at least 1 char)", async () => {
+      test("PATCH: 400 - attempting to patch user._id", async () => {
         const users = await fetchUsers(testDb);
         const testUserId = users[0]["_id"].toHexString();
 
@@ -797,15 +702,28 @@ describe("/api/users/:user_id", () => {
           .patch("/api/users/" + testUserId)
           .expect(400)
           .send({
-            firstName: "",
+            _id: "jam",
           })
           .then(({ body }) => {
             expect(body.errorMsg).toBe(
-              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+              "400 - this property can not be changed"
             );
           });
       });
-      test("PATCH: 400 - empty lastName property", async () => {
+      test("PATCH: 404 - passed a valid 24 char hex string but it is a non-existent userId", async () => {
+        const nonExistentId = "66e5af35c085e74eaf5f6487";
+
+        return request(app)
+          .patch("/api/users/" + nonExistentId)
+          .expect(404)
+          .send({
+            firstName: "Dave",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe("404 - userId could not be found");
+          });
+      });
+      test("PATCH: 400 - miscellaneous properties included on request body", async () => {
         const users = await fetchUsers(testDb);
         const testUserId = users[0]["_id"].toHexString();
 
@@ -813,7 +731,13 @@ describe("/api/users/:user_id", () => {
           .patch("/api/users/" + testUserId)
           .expect(400)
           .send({
-            lastName: "",
+            userPassword: "securePassword123!",
+            email: "eggsBenni@gmail.com",
+            firstName: "Egg",
+            lastName: "Benni",
+            preferredName: "Benni",
+            role: "USER",
+            favFood: "Egg benni!",
           })
           .then(({ body }) => {
             expect(body.errorMsg).toBe(
@@ -821,7 +745,130 @@ describe("/api/users/:user_id", () => {
             );
           });
       });
-      test("PATCH: 400 - empty preferredName property", async () => {
+      test("PATCH: 400 - invalid value type for firstName property", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        expect(users[0].firstName).toBe("John");
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            firstName: true,
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("PATCH: 400 - invalid value type for lastName property", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        expect(users[0].firstName).toBe("John");
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            lastName: true,
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("PATCH: 400 - invalid value type for preferredName property", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        expect(users[0].firstName).toBe("John");
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            preferredName: true,
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("PATCH: 400 - invalid value type for role property", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        expect(users[0].firstName).toBe("John");
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            role: true,
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("PATCH: 400 - invalid value type for userPassword property", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        expect(users[0].firstName).toBe("John");
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            userPassword: true,
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("PATCH: 400 - invalid value type for email property", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        expect(users[0].firstName).toBe("John");
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            email: true,
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("PATCH: 400 - invalid userId structure for parameterized query - must be a valid 24 char hex string", () => {
+        const invalidId = "66e5af35c085e74eaf5x6487";
+
+        return request(app)
+          .patch("/api/users/" + invalidId)
+          .send({
+            firstName: "Dave",
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("PATCH: 400 - invalid firstName structure(min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes)", async () => {
         const users = await fetchUsers(testDb);
         const testUserId = users[0]["_id"].toHexString();
 
@@ -829,7 +876,7 @@ describe("/api/users/:user_id", () => {
           .patch("/api/users/" + testUserId)
           .expect(400)
           .send({
-            preferredName: "",
+            firstName: "  ",
           })
           .then(({ body }) => {
             expect(body.errorMsg).toBe(
@@ -837,37 +884,7 @@ describe("/api/users/:user_id", () => {
             );
           });
       });
-      test("PATCH: 400 - empty role property", async () => {
-        const users = await fetchUsers(testDb);
-        const testUserId = users[0]["_id"].toHexString();
-        return request(app)
-          .patch("/api/users/" + testUserId)
-          .expect(400)
-          .send({
-            role: "",
-          })
-          .then(({ body }) => {
-            expect(body.errorMsg).toBe(
-              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
-            );
-          });
-      });
-      test("PATCH: 400 - invalid password structure", async () => {
-        const users = await fetchUsers(testDb);
-        const testUserId = users[0]["_id"].toHexString();
-        return request(app)
-          .patch("/api/users/" + testUserId)
-          .expect(400)
-          .send({
-            userPassword: "",
-          })
-          .then(({ body }) => {
-            expect(body.errorMsg).toBe(
-              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
-            );
-          });
-      });
-      test("PATCH: 400 - invalid email structure", async () => {
+      test("PATCH: 400 - invalid lastName structure(min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes)", async () => {
         const users = await fetchUsers(testDb);
         const testUserId = users[0]["_id"].toHexString();
 
@@ -875,7 +892,71 @@ describe("/api/users/:user_id", () => {
           .patch("/api/users/" + testUserId)
           .expect(400)
           .send({
-            email: "a@.com",
+            lastName: "  ",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("PATCH: 400 - invalid preferredName structure(min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes)", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            preferredName: "  ",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("PATCH: 400 - invalid role structure - can be either 'ADMIN' or 'USER'", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            role: "GOOFBALL",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - invalid password structure(must be at least 8 chars in length, contain: at least one lower case, one uppercase, one number, one of the included special chars (!@£$%^&*()))", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            userPassword: "invalid",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - invalid email structure", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            email: "invalid",
           })
           .then(({ body }) => {
             expect(body.errorMsg).toBe(
@@ -940,7 +1021,18 @@ describe("/api/thoughts", () => {
         });
     });
     describe("ERRORS", () => {
-      test("POST: 400 - missing properties from request body", async () => {
+      test("POST: 400 - empty request body", async () => {
+        return request(app)
+          .post("/api/thoughts")
+          .expect(400)
+          .send({})
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - missing userId property", async () => {
         return request(app)
           .post("/api/thoughts")
           .expect(400)
@@ -955,7 +1047,7 @@ describe("/api/thoughts", () => {
             );
           });
       });
-      test("POST: 400 - extra properties posted on request body", async () => {
+      test("POST: 400 - missing thoughtMessage property", async () => {
         const users = await fetchUsers(testDb);
         const testUserId = users[0]["_id"];
 
@@ -966,8 +1058,6 @@ describe("/api/thoughts", () => {
             userId: testUserId.toHexString(),
             category: "BILLS",
             isPriority: false,
-            thoughtMessage: "I need to pay my billy bills",
-            hungry: true,
           })
           .then(({ body }) => {
             expect(body.errorMsg).toBe(
@@ -975,7 +1065,7 @@ describe("/api/thoughts", () => {
             );
           });
       });
-      test("POST: 400 - invalid value for category - must be either BILLS, GENERAL or HOME", async () => {
+      test("POST: 400 - missing isPriority property", async () => {
         const users = await fetchUsers(testDb);
         const testUserId = users[0]["_id"];
 
@@ -984,7 +1074,39 @@ describe("/api/thoughts", () => {
           .expect(400)
           .send({
             userId: testUserId.toHexString(),
-            category: "GHOST",
+            category: "BILLS",
+            thoughtMessage: "I need to pay my billy bills",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - missing category property", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"];
+        return request(app)
+          .post("/api/thoughts")
+          .expect(400)
+          .send({
+            userId: testUserId.toHexString(),
+            isPriority: true,
+            thoughtMessage: "I need to pay my billy bills",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - invalid value type for userId property", async () => {
+        return request(app)
+          .post("/api/thoughts")
+          .expect(400)
+          .send({
+            userId: true,
+            category: "BILLS",
             isPriority: false,
             thoughtMessage: "I need to pay my billy bills",
           })
@@ -994,7 +1116,7 @@ describe("/api/thoughts", () => {
             );
           });
       });
-      test("POST: 400 - invalid types for values on request body", async () => {
+      test("POST: 400 - invalid value type for thoughtMessage property", async () => {
         const users = await fetchUsers(testDb);
         const testUserId = users[0]["_id"];
         return request(app)
@@ -1002,8 +1124,45 @@ describe("/api/thoughts", () => {
           .expect(400)
           .send({
             userId: testUserId.toHexString(),
+            category: "BILLS",
+            isPriority: true,
+            thoughtMessage: 99,
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - invalid value type for isPriority property", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"];
+        return request(app)
+          .post("/api/thoughts")
+          .expect(400)
+          .send({
+            userId: testUserId.toHexString(),
+            category: "BILLS",
+            isPriority: "hello",
+            thoughtMessage: "hello",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - invalid value type for category property", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"];
+
+        return request(app)
+          .post("/api/thoughts")
+          .expect(400)
+          .send({
+            userId: testUserId.toHexString(),
+            isPriority: true,
             category: false,
-            isPriority: 9,
             thoughtMessage: "I need to pay my billy bills",
           })
           .then(({ body }) => {
@@ -1012,8 +1171,59 @@ describe("/api/thoughts", () => {
             );
           });
       });
+      test("POST: 400 - invalid userId structure - must be 24 char hex string", async () => {
+        return request(app)
+          .post("/api/thoughts")
+          .expect(400)
+          .send({
+            userId: "notValid",
+            isPriority: true,
+            category: false,
+            thoughtMessage: "I need to pay my billy bills",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - invalid thoughtMessage structure - must be at least 10 chars and contain a lower or uppercase letter", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"];
+        return request(app)
+          .post("/api/thoughts")
+          .expect(400)
+          .send({
+            userId: testUserId.toHexString(),
+            isPriority: true,
+            category: "HOME",
+            thoughtMessage: "   ",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - invalid category structure - must be either 'HOME', 'GENERAL', 'BILLS'", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"];
+        return request(app)
+          .post("/api/thoughts")
+          .expect(400)
+          .send({
+            userId: testUserId.toHexString(),
+            isPriority: true,
+            category: "CHEESE",
+            thoughtMessage: "hello I need a wee",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
     });
-    // error handling needed for post request
   });
 });
 
@@ -1056,7 +1266,9 @@ describe("/api/thoughts/:thought_id", () => {
           .get("/api/thoughts/" + nonExistentId)
           .expect(400)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid id provided");
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
           });
       });
     });
@@ -1195,7 +1407,9 @@ describe("/api/thoughts/:thought_id", () => {
             thoughtMessage: "oops",
           })
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid id provided");
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
           });
       });
       test("400 - miscellaneous properties included on request body", async () => {
@@ -1304,7 +1518,9 @@ describe("/api/thoughts/:thought_id", () => {
           .delete("/api/thoughts/" + nonExistentId)
           .expect(400)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid id provided");
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
           });
       });
     });
@@ -1357,7 +1573,9 @@ describe("/api/thoughts/users/:user_id", () => {
           .get("/api/thoughts/users/" + nonExistentId)
           .expect(400)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid id provided");
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
           });
       });
     });
@@ -1396,7 +1614,9 @@ describe("/api/thoughts/users/:user_id", () => {
           .delete("/api/thoughts/users/" + nonExistentId)
           .expect(400)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("400 - invalid id provided");
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
           });
       });
     });

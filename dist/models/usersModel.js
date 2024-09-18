@@ -35,23 +35,18 @@ const fetchUserByUserId = (db, id) => __awaiter(void 0, void 0, void 0, function
 });
 exports.fetchUserByUserId = fetchUserByUserId;
 const createUser = (db, user) => __awaiter(void 0, void 0, void 0, function* () {
-    const userRoleWhiteList = ["ADMIN", "USER"];
-    if (!userRoleWhiteList.includes(user.role) || !user.userPassword) {
-        return Promise.reject({
-            status: 400,
-            errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
-        });
-    }
-    const validFirstName = /^[a-zA-Z'\s]{1,12}$/.test(user.firstName);
-    const validLastName = /^[a-zA-Z'\s]{1,12}$/.test(user.lastName);
-    const validPreferredName = /^[a-zA-Z'\s]{1,12}$/.test(user.preferredName);
+    const validFirstName = /^(?=.*[a-zA-Z])[a-zA-Z\s']{1,12}$/.test(user.firstName);
+    const validLastName = /^(?=.*[a-zA-Z])[a-zA-Z\s']{1,12}$/.test(user.lastName);
+    const validPreferredName = /^(?=.*[a-zA-Z])[a-zA-Z\s']{1,12}$/.test(user.preferredName);
     const validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@£$%^&\*()])[A-Za-z\d!@£$%^&\*()]{8,}$/.test(user.userPassword);
     const validEmail = /^[a-zA-Z0-9_\.±]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/i.test(user.email);
+    const validRole = /^(ADMIN|USER)$/.test(user.role);
     if (!validFirstName ||
         !validLastName ||
         !validPreferredName ||
         !validPassword ||
-        !validEmail) {
+        !validEmail ||
+        !validRole) {
         return Promise.reject({
             status: 400,
             errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
@@ -87,18 +82,55 @@ const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, vo
     if (updateDetails._id) {
         return Promise.reject({
             status: 400,
-            errorMsg: "400 - cannot change this property",
+            errorMsg: "400 - this property can not be changed",
         });
     }
-    if (Object.keys(updateDetails).includes("role")) {
-        const userRoleWhiteList = ["ADMIN", "USER"];
-        if (!userRoleWhiteList.includes(updateDetails.role)) {
-            return Promise.reject({
-                status: 400,
-                errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
-            });
-        }
+    let validFirstName = true;
+    let validLastName = true;
+    let validPreferredName = true;
+    let validPassword = true;
+    let validEmail = true;
+    let validRole = true;
+    if (updateDetails.firstName) {
+        validFirstName = /^(?=.*[a-zA-Z])[a-zA-Z\s']{1,12}$/.test(updateDetails.firstName);
     }
+    if (updateDetails.lastName) {
+        validLastName = /^(?=.*[a-zA-Z])[a-zA-Z\s']{1,12}$/.test(updateDetails.lastName);
+    }
+    if (updateDetails.preferredName) {
+        validPreferredName = /^(?=.*[a-zA-Z])[a-zA-Z\s']{1,12}$/.test(updateDetails.preferredName);
+    }
+    if (updateDetails.role) {
+        validRole = /^(ADMIN|USER)$/.test(updateDetails.role);
+    }
+    if (updateDetails.userPassword) {
+        validPassword =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@£$%^&\*()])[A-Za-z\d!@£$%^&\*()]{8,}$/.test(updateDetails.userPassword);
+    }
+    if (updateDetails.email) {
+        validEmail = /^[a-zA-Z0-9_\.±]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(updateDetails.email);
+    }
+    if (!validFirstName ||
+        !validLastName ||
+        !validPreferredName ||
+        !validRole ||
+        !validPassword ||
+        !validEmail) {
+        return Promise.reject({
+            status: 400,
+            errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+        });
+    }
+    // if (Object.keys(updateDetails).includes("role")) {
+    //   const userRoleWhiteList = ["ADMIN", "USER"];
+    //   if (!userRoleWhiteList.includes(updateDetails.role!)) {
+    //     return Promise.reject({
+    //       status: 400,
+    //       errorMsg:
+    //         "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+    //     });
+    //   }
+    // }
     if (Object.keys(updateDetails).includes("userPassword")) {
         const validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d!@£$%^&*()]{8,}$/.test(updateDetails.userPassword);
         if (!validPassword) {
@@ -130,7 +162,10 @@ const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, vo
     const usersCollection = db.collection("Users");
     const updatedUser = yield usersCollection.findOneAndUpdate({ _id: new mongodb_1.ObjectId(id) }, { $set: Object.assign({}, updateDetails) }, { returnDocument: "after" });
     if (updatedUser === null) {
-        return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
+        return Promise.reject({
+            status: 404,
+            errorMsg: "404 - userId could not be found",
+        });
     }
     return updatedUser;
 });

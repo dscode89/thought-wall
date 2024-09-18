@@ -46,14 +46,13 @@ const fetchThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, func
 });
 exports.fetchThoughtsByUserId = fetchThoughtsByUserId;
 const createThought = (db, thought) => __awaiter(void 0, void 0, void 0, function* () {
-    if (thought.category) {
-        const thoughtCategoryWhitelist = ["HOME", "GENERAL", "BILLS"];
-        if (!thoughtCategoryWhitelist.includes(thought.category)) {
-            return Promise.reject({
-                status: 400,
-                errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
-            });
-        }
+    const validThoughtMessage = /(?=.*[a-zA-Z]).{10,}$/.test(thought.thoughtMessage);
+    const validCategory = /^(BILLS|HOME|GENERAL)/.test(thought.category);
+    if (!validThoughtMessage || !validCategory) {
+        return Promise.reject({
+            status: 400,
+            errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+        });
     }
     const thoughtsCollection = db.collection("Thoughts");
     const { insertedId } = yield thoughtsCollection.insertOne(thought);
