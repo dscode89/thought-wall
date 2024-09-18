@@ -93,14 +93,19 @@ const amendThoughtDetails = (db, id, updateDetails) => __awaiter(void 0, void 0,
             errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
         });
     }
+    let validThoughtMessage = true;
+    let validCategory = true;
+    if (updateDetails.thoughtMessage) {
+        validThoughtMessage = /(?=.*[a-zA-Z]).{10,}$/.test(updateDetails.thoughtMessage);
+    }
     if (updateDetails.category) {
-        const thoughtCategoryWhitelist = ["HOME", "GENERAL", "BILLS"];
-        if (!thoughtCategoryWhitelist.includes(updateDetails.category)) {
-            return Promise.reject({
-                status: 400,
-                errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
-            });
-        }
+        validCategory = /^(BILLS|HOME|GENERAL)/.test(updateDetails.category);
+    }
+    if (!validThoughtMessage || !validCategory) {
+        return Promise.reject({
+            status: 400,
+            errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+        });
     }
     if (updateDetails.userId || updateDetails._id) {
         return Promise.reject({
@@ -113,7 +118,7 @@ const amendThoughtDetails = (db, id, updateDetails) => __awaiter(void 0, void 0,
     if (updatedThought === null) {
         return Promise.reject({
             status: 404,
-            errorMsg: "404 - invalid thought id",
+            errorMsg: "404 - thoughtId could not be found",
         });
     }
     return updatedThought;

@@ -1171,52 +1171,13 @@ describe("/api/thoughts/:thought_id", () => {
             });
         }));
         describe("ERRORS", () => {
-            test("404 - passed a non-existent thoughtId", () => __awaiter(void 0, void 0, void 0, function* () {
-                const nonExistentId = "66e5af35c085e74eaf5f6487";
-                return (0, supertest_1.default)(app_1.default)
-                    .patch("/api/thoughts/" + nonExistentId)
-                    .expect(404)
-                    .send({
-                    thoughtMessage: "oops",
-                })
-                    .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - invalid thought id");
-                });
-            }));
-            test("400 - attempting to patch thought.userId", () => __awaiter(void 0, void 0, void 0, function* () {
+            test("400 - empty request body", () => __awaiter(void 0, void 0, void 0, function* () {
                 const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
                 const testThoughtId = thoughts[0]["_id"].toHexString();
                 return (0, supertest_1.default)(app_1.default)
                     .patch("/api/thoughts/" + testThoughtId)
                     .expect(400)
-                    .send({
-                    userId: "jam",
-                })
-                    .then(({ body }) => {
-                    expect(body.errorMsg).toBe("400 - cannot change this property");
-                });
-            }));
-            test("400 - attempting to patch thought._id", () => __awaiter(void 0, void 0, void 0, function* () {
-                const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
-                const testThoughtId = thoughts[0]["_id"].toHexString();
-                return (0, supertest_1.default)(app_1.default)
-                    .patch("/api/thoughts/" + testThoughtId)
-                    .expect(400)
-                    .send({
-                    _id: "jam",
-                })
-                    .then(({ body }) => {
-                    expect(body.errorMsg).toBe("400 - cannot change this property");
-                });
-            }));
-            test("400 - thought id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {
-                const nonExistentId = "66e5af35c085e74eax5f6487";
-                return (0, supertest_1.default)(app_1.default)
-                    .patch("/api/thoughts/" + nonExistentId)
-                    .expect(400)
-                    .send({
-                    thoughtMessage: "oops",
-                })
+                    .send({})
                     .then(({ body }) => {
                     expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
                 });
@@ -1237,43 +1198,117 @@ describe("/api/thoughts/:thought_id", () => {
                     expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
                 });
             }));
-            test("400 - attempting to patch the thought.category property to something other than HOME, GENERAL or BILLS", () => __awaiter(void 0, void 0, void 0, function* () {
+            test("PATCH: 404 - passed a non-existent thoughtId", () => __awaiter(void 0, void 0, void 0, function* () {
+                const nonExistentId = "66e5af35c085e74eaf5f6487";
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/thoughts/" + nonExistentId)
+                    .expect(404)
+                    .send({
+                    thoughtMessage: "oopshjhkjhkhhjk",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("404 - thoughtId could not be found");
+                });
+            }));
+            test("PATCH: 400 - attempting to patch thought._id", () => __awaiter(void 0, void 0, void 0, function* () {
                 const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
                 const testThoughtId = thoughts[0]["_id"].toHexString();
                 return (0, supertest_1.default)(app_1.default)
                     .patch("/api/thoughts/" + testThoughtId)
                     .expect(400)
                     .send({
-                    thoughtMessage: "I love thoughts",
-                    isPriority: false,
-                    category: "GHOST",
+                    _id: "jam",
                 })
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                    expect(body.errorMsg).toBe("400 - cannot change this property");
                 });
             }));
-            test("400 - invalid request body property values", () => __awaiter(void 0, void 0, void 0, function* () {
+            test("PATCH: 400 - attempting to patch thought.userId", () => __awaiter(void 0, void 0, void 0, function* () {
                 const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
                 const testThoughtId = thoughts[0]["_id"].toHexString();
                 return (0, supertest_1.default)(app_1.default)
                     .patch("/api/thoughts/" + testThoughtId)
                     .expect(400)
                     .send({
-                    thoughtMessage: 0,
-                    isPriority: "false",
-                    category: true,
+                    userId: "jam",
                 })
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                    expect(body.errorMsg).toBe("400 - cannot change this property");
                 });
             }));
-            test("400 - empty request body", () => __awaiter(void 0, void 0, void 0, function* () {
+            test("PATCH: 400 - invalid value type for thoughtMessage property", () => __awaiter(void 0, void 0, void 0, function* () {
                 const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
                 const testThoughtId = thoughts[0]["_id"].toHexString();
                 return (0, supertest_1.default)(app_1.default)
                     .patch("/api/thoughts/" + testThoughtId)
                     .expect(400)
-                    .send({})
+                    .send({
+                    thoughtMessage: 99,
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("PATCH: 400 - invalid value type for isPriority property", () => __awaiter(void 0, void 0, void 0, function* () {
+                const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
+                const testThoughtId = thoughts[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/thoughts/" + testThoughtId)
+                    .expect(400)
+                    .send({
+                    isPriority: 99,
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("PATCH: 400 - invalid value type for category property", () => __awaiter(void 0, void 0, void 0, function* () {
+                const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
+                const testThoughtId = thoughts[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/thoughts/" + testThoughtId)
+                    .expect(400)
+                    .send({
+                    category: 99,
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("PATCH: 400 - invalid thoughtMessage structure - must be at least 10 chars and contain a lower or uppercase letter", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"];
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/thoughts/" + testUserId)
+                    .expect(400)
+                    .send({
+                    thoughtMessage: "   ",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("PATCH: 400 - invalid category structure - must be either 'HOME', 'GENERAL', 'BILLS'", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"];
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/thoughts/" + testUserId)
+                    .expect(400)
+                    .send({
+                    category: "CHEESE",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("400 - thought id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {
+                const nonExistentId = "66e5af35c085e74eax5f6487";
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/thoughts/" + nonExistentId)
+                    .expect(400)
+                    .send({
+                    thoughtMessage: "oops",
+                })
                     .then(({ body }) => {
                     expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
                 });
