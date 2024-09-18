@@ -22,14 +22,17 @@ const userValidationSchema = {
             firstName: {
                 bsonType: "string",
                 description: "'firstName' must be a string and is required",
+                minLength: 1,
             },
             lastName: {
                 bsonType: "string",
                 description: "'lastName' must be a string and is required",
+                minLength: 1,
             },
             preferredName: {
                 bsonType: "string",
                 description: "'preferredName' must be a string and is required",
+                minLength: 1,
             },
             role: {
                 bsonType: "string",

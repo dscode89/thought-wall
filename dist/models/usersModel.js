@@ -36,7 +36,22 @@ const fetchUserByUserId = (db, id) => __awaiter(void 0, void 0, void 0, function
 exports.fetchUserByUserId = fetchUserByUserId;
 const createUser = (db, user) => __awaiter(void 0, void 0, void 0, function* () {
     const userRoleWhiteList = ["ADMIN", "USER"];
-    if (!userRoleWhiteList.includes(user.role)) {
+    if (!userRoleWhiteList.includes(user.role) || !user.userPassword) {
+        return Promise.reject({
+            status: 400,
+            errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+        });
+    }
+    const validFirstName = /^[a-zA-Z'\s]{1,12}$/.test(user.firstName);
+    const validLastName = /^[a-zA-Z'\s]{1,12}$/.test(user.lastName);
+    const validPreferredName = /^[a-zA-Z'\s]{1,12}$/.test(user.preferredName);
+    const validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@£$%^&\*()])[A-Za-z\d!@£$%^&\*()]{8,}$/.test(user.userPassword);
+    const validEmail = /^[a-zA-Z0-9_\.±]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/i.test(user.email);
+    if (!validFirstName ||
+        !validLastName ||
+        !validPreferredName ||
+        !validPassword ||
+        !validEmail) {
         return Promise.reject({
             status: 400,
             errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
@@ -75,7 +90,7 @@ const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, vo
             errorMsg: "400 - cannot change this property",
         });
     }
-    if (updateDetails.role) {
+    if (Object.keys(updateDetails).includes("role")) {
         const userRoleWhiteList = ["ADMIN", "USER"];
         if (!userRoleWhiteList.includes(updateDetails.role)) {
             return Promise.reject({
@@ -84,11 +99,34 @@ const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, vo
             });
         }
     }
-    if (updateDetails.userPassword) {
-        const salt = bcryptjs_1.default.genSaltSync(10);
-        const hash = bcryptjs_1.default.hashSync(updateDetails.userPassword, salt);
-        updateDetails.userPassword = hash;
+    if (Object.keys(updateDetails).includes("userPassword")) {
+        const validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d!@£$%^&*()]{8,}$/.test(updateDetails.userPassword);
+        if (!validPassword) {
+            return Promise.reject({
+                status: 400,
+                errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+            });
+        }
+        else {
+            const salt = bcryptjs_1.default.genSaltSync(10);
+            const hash = bcryptjs_1.default.hashSync(updateDetails.userPassword, salt);
+            updateDetails.userPassword = hash;
+        }
     }
+    if (Object.keys(updateDetails).includes("email")) {
+        const validEmail = /^[a-zA-Z0-9_\.±]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/i.test(updateDetails.email);
+        if (!validEmail) {
+            return Promise.reject({
+                status: 400,
+                errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
+            });
+        }
+    }
+    // if (updateDetails.userPassword) {
+    //   const salt = bcrypt.genSaltSync(10);
+    //   const hash = bcrypt.hashSync(updateDetails.userPassword, salt);
+    //   updateDetails.userPassword = hash;
+    // }
     const usersCollection = db.collection("Users");
     const updatedUser = yield usersCollection.findOneAndUpdate({ _id: new mongodb_1.ObjectId(id) }, { $set: Object.assign({}, updateDetails) }, { returnDocument: "after" });
     if (updatedUser === null) {

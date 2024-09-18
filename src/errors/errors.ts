@@ -25,7 +25,7 @@ export const mondoDbErrors: ErrorRequestHandler = (
     "input must be a 24 character hex string, 12 byte Uint8Array, or an integer"
   ) {
     res.status(400).send({ errorMsg: "400 - invalid id provided" });
-  } else if (err.code === 121) {
+  } else if (err.code === 121 || err.message.includes("Illegal arguments:")) {
     res.status(400).send({
       errorMsg:
         "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
@@ -41,6 +41,6 @@ export const uncaughtErrorHandler: ErrorRequestHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log(err, "<-- uncaught error");
+  console.log(err.message, "<-- uncaught error");
   res.status(500).send({ msg: "Server is currently broken" });
 };
