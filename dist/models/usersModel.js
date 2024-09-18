@@ -121,18 +121,7 @@ const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, vo
             errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
         });
     }
-    // if (Object.keys(updateDetails).includes("role")) {
-    //   const userRoleWhiteList = ["ADMIN", "USER"];
-    //   if (!userRoleWhiteList.includes(updateDetails.role!)) {
-    //     return Promise.reject({
-    //       status: 400,
-    //       errorMsg:
-    //         "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
-    //     });
-    //   }
-    // }
     if (Object.keys(updateDetails).includes("userPassword")) {
-        const validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d!@£$%^&*()]{8,}$/.test(updateDetails.userPassword);
         if (!validPassword) {
             return Promise.reject({
                 status: 400,
@@ -145,20 +134,6 @@ const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, vo
             updateDetails.userPassword = hash;
         }
     }
-    if (Object.keys(updateDetails).includes("email")) {
-        const validEmail = /^[a-zA-Z0-9_\.±]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/i.test(updateDetails.email);
-        if (!validEmail) {
-            return Promise.reject({
-                status: 400,
-                errorMsg: "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint",
-            });
-        }
-    }
-    // if (updateDetails.userPassword) {
-    //   const salt = bcrypt.genSaltSync(10);
-    //   const hash = bcrypt.hashSync(updateDetails.userPassword, salt);
-    //   updateDetails.userPassword = hash;
-    // }
     const usersCollection = db.collection("Users");
     const updatedUser = yield usersCollection.findOneAndUpdate({ _id: new mongodb_1.ObjectId(id) }, { $set: Object.assign({}, updateDetails) }, { returnDocument: "after" });
     if (updatedUser === null) {

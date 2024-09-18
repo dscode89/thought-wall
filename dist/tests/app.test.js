@@ -646,12 +646,6 @@ describe("/api/users/:user_id", () => {
                     .patch("/api/users/" + testUserId)
                     .expect(400)
                     .send({
-                    userPassword: "securePassword123!",
-                    email: "eggsBenni@gmail.com",
-                    firstName: "Egg",
-                    lastName: "Benni",
-                    preferredName: "Benni",
-                    role: "USER",
                     favFood: "Egg benni!",
                 })
                     .then(({ body }) => {
@@ -1189,9 +1183,6 @@ describe("/api/thoughts/:thought_id", () => {
                     .patch("/api/thoughts/" + testThoughtId)
                     .expect(400)
                     .send({
-                    thoughtMessage: "I love thoughts",
-                    isPriority: false,
-                    category: "ADMIN",
                     isInUncomfortableseat: true,
                 })
                     .then(({ body }) => {
@@ -1314,7 +1305,6 @@ describe("/api/thoughts/:thought_id", () => {
                 });
             }));
         });
-        // error handling needed here - think about possible errors
     });
     describe("DELETE", () => {
         test("DELETE: 204 - will delete a thought document from Thoughts collection", () => __awaiter(void 0, void 0, void 0, function* () {

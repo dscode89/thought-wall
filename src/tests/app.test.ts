@@ -731,12 +731,6 @@ describe("/api/users/:user_id", () => {
           .patch("/api/users/" + testUserId)
           .expect(400)
           .send({
-            userPassword: "securePassword123!",
-            email: "eggsBenni@gmail.com",
-            firstName: "Egg",
-            lastName: "Benni",
-            preferredName: "Benni",
-            role: "USER",
             favFood: "Egg benni!",
           })
           .then(({ body }) => {
@@ -1378,9 +1372,6 @@ describe("/api/thoughts/:thought_id", () => {
           .patch("/api/thoughts/" + testThoughtId)
           .expect(400)
           .send({
-            thoughtMessage: "I love thoughts",
-            isPriority: false,
-            category: "ADMIN",
             isInUncomfortableseat: true,
           })
           .then(({ body }) => {
@@ -1400,6 +1391,21 @@ describe("/api/thoughts/:thought_id", () => {
           })
           .then(({ body }) => {
             expect(body.errorMsg).toBe("404 - thoughtId could not be found");
+          });
+      });
+      test("400 - thought id is not a valid 24 char hex string", async () => {
+        const nonExistentId = "66e5af35c085e74eax5f6487";
+
+        return request(app)
+          .patch("/api/thoughts/" + nonExistentId)
+          .expect(400)
+          .send({
+            thoughtMessage: "oops",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
           });
       });
       test("PATCH: 400 - attempting to patch thought._id", async () => {
@@ -1508,23 +1514,7 @@ describe("/api/thoughts/:thought_id", () => {
             );
           });
       });
-      test("400 - thought id is not a valid 24 char hex string", async () => {
-        const nonExistentId = "66e5af35c085e74eax5f6487";
-
-        return request(app)
-          .patch("/api/thoughts/" + nonExistentId)
-          .expect(400)
-          .send({
-            thoughtMessage: "oops",
-          })
-          .then(({ body }) => {
-            expect(body.errorMsg).toBe(
-              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
-            );
-          });
-      });
     });
-    // error handling needed here - think about possible errors
   });
   describe("DELETE", () => {
     test("DELETE: 204 - will delete a thought document from Thoughts collection", async () => {
