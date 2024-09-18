@@ -290,7 +290,7 @@ describe("/api/users", () => {
             );
           });
       });
-      test("POST: 400 - invalid valid for userPassword property", () => {
+      test("POST: 400 - invalid value type for userPassword property", () => {
         return request(app)
           .post("/api/users")
           .expect(400)
@@ -308,7 +308,7 @@ describe("/api/users", () => {
             );
           });
       });
-      test("POST: 400 - invalid types for email property", () => {
+      test("POST: 400 - invalid value type for email property", () => {
         return request(app)
           .post("/api/users")
           .expect(400)
@@ -317,7 +317,7 @@ describe("/api/users", () => {
             lastName: "Jeff",
             preferredName: "Ash",
             role: "ADMIN",
-            userPassword: "securepass458",
+            userPassword: "securePass458!",
             email: true,
           })
           .then(({ body }) => {

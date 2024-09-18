@@ -265,7 +265,7 @@ describe("/api/users", () => {
                     expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
                 });
             });
-            test("POST: 400 - invalid valid for userPassword property", () => {
+            test("POST: 400 - invalid value type for userPassword property", () => {
                 return (0, supertest_1.default)(app_1.default)
                     .post("/api/users")
                     .expect(400)
@@ -281,7 +281,7 @@ describe("/api/users", () => {
                     expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
                 });
             });
-            test("POST: 400 - invalid types for email property", () => {
+            test("POST: 400 - invalid value type for email property", () => {
                 return (0, supertest_1.default)(app_1.default)
                     .post("/api/users")
                     .expect(400)
@@ -290,7 +290,7 @@ describe("/api/users", () => {
                     lastName: "Jeff",
                     preferredName: "Ash",
                     role: "ADMIN",
-                    userPassword: "securepass458",
+                    userPassword: "securePass458!",
                     email: true,
                 })
                     .then(({ body }) => {
