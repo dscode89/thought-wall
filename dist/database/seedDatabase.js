@@ -27,9 +27,9 @@ function seedTestDatabase(db) {
             validator: schemaValidationIndex_1.thoughtValidationSchema,
         });
         yield db.collection("Users").insertMany(users_1.default);
-        const instertedUsers = yield db.collection("Users").find().toArray();
-        const firstUserId = instertedUsers[0]["_id"];
-        const secondUserId = instertedUsers[1]["_id"];
+        const insertedUsers = yield db.collection("Users").find().toArray();
+        const firstUserId = insertedUsers[0]["_id"];
+        const secondUserId = insertedUsers[1]["_id"];
         thoughts_1.default.forEach((thought, i) => {
             if (i % 2 === 0) {
                 thought.userId = firstUserId;

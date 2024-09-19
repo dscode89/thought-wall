@@ -4,8 +4,12 @@ import app from "../app";
 import { User, Thought } from "../types/types";
 import createDatabaseConnection from "../database/createDatabaseConnection";
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { fetchUsers } from "../models/usersModel";
-import { fetchThoughts } from "../models/thoughtsModel";
+import { fetchUsers, removeUser } from "../models/usersModel";
+import {
+  createThought,
+  fetchThoughts,
+  fetchThoughtsByUserId,
+} from "../models/thoughtsModel";
 import bcrypt from "bcryptjs";
 
 let testDb: Db;
@@ -481,7 +485,9 @@ describe("/api/users/:user_id", () => {
           .get("/api/users/" + nonExistentId)
           .expect(404)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("404 - invalid user id");
+            expect(body.errorMsg).toBe(
+              "404 - Could not find any thoughts relating to provided userId"
+            );
           });
       });
       test("400 - user id is not a valid 24 char hex string", async () => {
@@ -514,6 +520,43 @@ describe("/api/users/:user_id", () => {
           expect(users.length).toBe(4);
         });
     });
+    test("DELETE:204 - if a user is deleted, any thought documents relating to that user will be deleted as well", async () => {
+      const users = await fetchUsers(testDb);
+      const testUserId = users[0]["_id"];
+      // post a thought
+      await createThought(testDb, {
+        userId: testUserId,
+        thoughtMessage: "here is a thought mate",
+        isPriority: false,
+        category: "GENERAL",
+      });
+      // post another thought
+      await createThought(testDb, {
+        userId: testUserId,
+        thoughtMessage: "here is another thought mate",
+        isPriority: false,
+        category: "GENERAL",
+      });
+      // fetch current thoughts, should be 5
+      const initialRequestedThoughts = await fetchThoughtsByUserId(
+        testDb,
+        testUserId.toHexString()
+      );
+
+      expect(initialRequestedThoughts.length).toBe(5);
+      // remove user from the data base
+      await removeUser(testDb, testUserId.toHexString());
+
+      try {
+        await fetchThoughtsByUserId(testDb, testUserId.toHexString());
+      } catch (error) {
+        expect(error).toEqual({
+          errorMsg:
+            "404 - Could not find any thoughts relating to provided userId",
+          status: 404,
+        });
+      }
+    });
     describe("ERRORS", () => {
       test("404 - passed a non-existent userId", () => {
         const nonExistentId = "66e5af35c085e74eaf5f6487";
@@ -522,7 +565,9 @@ describe("/api/users/:user_id", () => {
           .delete("/api/users/" + nonExistentId)
           .expect(404)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("404 - invalid user id");
+            expect(body.errorMsg).toBe(
+              "404 - Could not find any thoughts relating to provided userId"
+            );
           });
       });
       test("400 - user id is not a valid 24 char hex string", () => {
@@ -1691,7 +1736,9 @@ describe("/api/thoughts/users/:user_id", () => {
           .get("/api/thoughts/users/" + nonExistentId)
           .expect(404)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("404 - invalid thought id");
+            expect(body.errorMsg).toBe(
+              "404 - Could not find any thoughts relating to provided userId"
+            );
           });
       });
       test("400 - user id is not a valid 24 char hex string", async () => {
@@ -1733,7 +1780,7 @@ describe("/api/thoughts/users/:user_id", () => {
           .expect(404)
           .then(({ body }) => {
             expect(body.errorMsg).toBe(
-              "404 - There are no thoughts for this userId."
+              "404 - Could not find any thoughts relating to provided userId"
             );
           });
       });

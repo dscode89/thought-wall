@@ -1,6 +1,7 @@
 import { Db, ObjectId } from "mongodb";
-import { User, PatchUserObjType } from "../types/types";
+import { User, PatchUserObjType, Thought } from "../types/types";
 import bcrypt from "bcryptjs";
+import { removeThoughtsByUserId } from "./thoughtsModel";
 
 export const fetchUsers = async (db: Db) => {
   // get the Users collection from chosen database
@@ -18,7 +19,10 @@ export const fetchUserByUserId = async (db: Db, id: string) => {
   });
 
   if (requestedUser === null) {
-    return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
+    return Promise.reject({
+      status: 404,
+      errorMsg: "404 - Could not find any thoughts relating to provided userId",
+    });
   }
   return requestedUser;
 };
@@ -70,12 +74,18 @@ export const createUser = async (db: Db, user: User) => {
 
 export const removeUser = async (db: Db, id: string) => {
   const usersCollection = db.collection<User>("Users");
+
+  await removeThoughtsByUserId(db, id);
+
   const { deletedCount } = await usersCollection.deleteOne({
     _id: new ObjectId(id),
   });
 
   if (!deletedCount) {
-    return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
+    return Promise.reject({
+      status: 404,
+      errorMsg: "404 - Could not find any thoughts relating to provided userId",
+    });
   }
 };
 

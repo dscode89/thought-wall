@@ -432,7 +432,7 @@ describe("/api/users/:user_id", () => {
                     .get("/api/users/" + nonExistentId)
                     .expect(404)
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - invalid user id");
+                    expect(body.errorMsg).toBe("404 - Could not find any thoughts relating to provided userId");
                 });
             }));
             test("400 - user id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -460,6 +460,38 @@ describe("/api/users/:user_id", () => {
                 expect(users.length).toBe(4);
             });
         }));
+        test("DELETE:204 - if a user is deleted, any thought documents relating to that user will be deleted as well", () => __awaiter(void 0, void 0, void 0, function* () {
+            const users = yield (0, usersModel_1.fetchUsers)(testDb);
+            const testUserId = users[0]["_id"];
+            // post a thought
+            yield (0, thoughtsModel_1.createThought)(testDb, {
+                userId: testUserId,
+                thoughtMessage: "here is a thought mate",
+                isPriority: false,
+                category: "GENERAL",
+            });
+            // post another thought
+            yield (0, thoughtsModel_1.createThought)(testDb, {
+                userId: testUserId,
+                thoughtMessage: "here is another thought mate",
+                isPriority: false,
+                category: "GENERAL",
+            });
+            // fetch current thoughts, should be 5
+            const initialRequestedThoughts = yield (0, thoughtsModel_1.fetchThoughtsByUserId)(testDb, testUserId.toHexString());
+            expect(initialRequestedThoughts.length).toBe(5);
+            // remove user from the data base
+            yield (0, usersModel_1.removeUser)(testDb, testUserId.toHexString());
+            try {
+                yield (0, thoughtsModel_1.fetchThoughtsByUserId)(testDb, testUserId.toHexString());
+            }
+            catch (error) {
+                expect(error).toEqual({
+                    errorMsg: "404 - Could not find any thoughts relating to provided userId",
+                    status: 404,
+                });
+            }
+        }));
         describe("ERRORS", () => {
             test("404 - passed a non-existent userId", () => {
                 const nonExistentId = "66e5af35c085e74eaf5f6487";
@@ -467,7 +499,7 @@ describe("/api/users/:user_id", () => {
                     .delete("/api/users/" + nonExistentId)
                     .expect(404)
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - invalid user id");
+                    expect(body.errorMsg).toBe("404 - Could not find any thoughts relating to provided userId");
                 });
             });
             test("400 - user id is not a valid 24 char hex string", () => {
@@ -1450,7 +1482,7 @@ describe("/api/thoughts/users/:user_id", () => {
                     .get("/api/thoughts/users/" + nonExistentId)
                     .expect(404)
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - invalid thought id");
+                    expect(body.errorMsg).toBe("404 - Could not find any thoughts relating to provided userId");
                 });
             }));
             test("400 - user id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -1485,7 +1517,7 @@ describe("/api/thoughts/users/:user_id", () => {
                     .delete("/api/thoughts/users/" + nonExistentId)
                     .expect(404)
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - There are no thoughts for this userId.");
+                    expect(body.errorMsg).toBe("404 - Could not find any thoughts relating to provided userId");
                 });
             }));
             test("400 - user id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {

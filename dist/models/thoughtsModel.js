@@ -39,7 +39,7 @@ const fetchThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, func
     if (!requestedThoughts.length) {
         return Promise.reject({
             status: 404,
-            errorMsg: "404 - invalid thought id",
+            errorMsg: "404 - Could not find any thoughts relating to provided userId",
         });
     }
     return requestedThoughts;
@@ -81,7 +81,7 @@ const removeThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, fun
     if (!deletedCount) {
         return Promise.reject({
             status: 404,
-            errorMsg: "404 - There are no thoughts for this userId.",
+            errorMsg: "404 - Could not find any thoughts relating to provided userId",
         });
     }
 });

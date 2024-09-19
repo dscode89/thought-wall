@@ -19,10 +19,10 @@ async function seedTestDatabase(db: Db) {
 
   await db.collection("Users").insertMany(users);
 
-  const instertedUsers = await db.collection("Users").find().toArray();
+  const insertedUsers = await db.collection("Users").find().toArray();
 
-  const firstUserId = instertedUsers[0]["_id"];
-  const secondUserId = instertedUsers[1]["_id"];
+  const firstUserId = insertedUsers[0]["_id"];
+  const secondUserId = insertedUsers[1]["_id"];
 
   thoughts.forEach((thought, i) => {
     if (i % 2 === 0) {
@@ -31,6 +31,7 @@ async function seedTestDatabase(db: Db) {
       thought.userId = secondUserId;
     }
   });
+
   await db.collection("Thoughts").insertMany(thoughts);
 }
 

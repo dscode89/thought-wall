@@ -10,7 +10,7 @@ export interface User {
 }
 
 export interface Thought {
-  userId: ObjectId;
+  userId: ObjectId | string;
   thoughtMessage: string;
   category: "HOME" | "BILLS" | "GENERAL";
   isPriority: boolean;

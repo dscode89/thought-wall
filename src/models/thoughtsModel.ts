@@ -32,7 +32,7 @@ export const fetchThoughtsByUserId = async (db: Db, id: string) => {
   if (!requestedThoughts.length) {
     return Promise.reject({
       status: 404,
-      errorMsg: "404 - invalid thought id",
+      errorMsg: "404 - Could not find any thoughts relating to provided userId",
     });
   }
   return requestedThoughts;
@@ -82,7 +82,7 @@ export const removeThoughtsByUserId = async (db: Db, id: string) => {
   if (!deletedCount) {
     return Promise.reject({
       status: 404,
-      errorMsg: "404 - There are no thoughts for this userId.",
+      errorMsg: "404 - Could not find any thoughts relating to provided userId",
     });
   }
 };

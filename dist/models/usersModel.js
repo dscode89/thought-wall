@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.amendUserDetails = exports.removeUser = exports.createUser = exports.fetchUserByUserId = exports.fetchUsers = void 0;
 const mongodb_1 = require("mongodb");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const thoughtsModel_1 = require("./thoughtsModel");
 const fetchUsers = (db) => __awaiter(void 0, void 0, void 0, function* () {
     // get the Users collection from chosen database
     const usersCollection = db.collection("Users");
@@ -29,7 +30,10 @@ const fetchUserByUserId = (db, id) => __awaiter(void 0, void 0, void 0, function
         _id: new mongodb_1.ObjectId(id),
     });
     if (requestedUser === null) {
-        return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
+        return Promise.reject({
+            status: 404,
+            errorMsg: "404 - Could not find any thoughts relating to provided userId",
+        });
     }
     return requestedUser;
 });
@@ -64,11 +68,15 @@ const createUser = (db, user) => __awaiter(void 0, void 0, void 0, function* () 
 exports.createUser = createUser;
 const removeUser = (db, id) => __awaiter(void 0, void 0, void 0, function* () {
     const usersCollection = db.collection("Users");
+    yield (0, thoughtsModel_1.removeThoughtsByUserId)(db, id);
     const { deletedCount } = yield usersCollection.deleteOne({
         _id: new mongodb_1.ObjectId(id),
     });
     if (!deletedCount) {
-        return Promise.reject({ status: 404, errorMsg: "404 - invalid user id" });
+        return Promise.reject({
+            status: 404,
+            errorMsg: "404 - Could not find any thoughts relating to provided userId",
+        });
     }
 });
 exports.removeUser = removeUser;
