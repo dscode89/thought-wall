@@ -826,6 +826,84 @@ describe("/api/users/:user_id", () => {
                     expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
                 });
             }));
+            test("PATCH: 400 - empty firstName(min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes)", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/users/" + testUserId)
+                    .expect(400)
+                    .send({
+                    firstName: "",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("PATCH: 400 - empty lastName(min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes)", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/users/" + testUserId)
+                    .expect(400)
+                    .send({
+                    lastName: "",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("PATCH: 400 - empty preferredName(min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes)", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/users/" + testUserId)
+                    .expect(400)
+                    .send({
+                    preferredName: "  ",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("PATCH: 400 - empty role  - can be either 'ADMIN' or 'USER'", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/users/" + testUserId)
+                    .expect(400)
+                    .send({
+                    role: "",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("POST: 400 - empty password(must be at least 8 chars in length, contain: at least one lower case, one uppercase, one number, one of the included special chars (!@£$%^&*()))", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/users/" + testUserId)
+                    .expect(400)
+                    .send({
+                    userPassword: "",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
+            test("POST: 400 - empty email structure", () => __awaiter(void 0, void 0, void 0, function* () {
+                const users = yield (0, usersModel_1.fetchUsers)(testDb);
+                const testUserId = users[0]["_id"].toHexString();
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/users/" + testUserId)
+                    .expect(400)
+                    .send({
+                    email: "",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
         });
     });
 });
@@ -1201,6 +1279,18 @@ describe("/api/thoughts/:thought_id", () => {
                     expect(body.errorMsg).toBe("404 - thoughtId could not be found");
                 });
             }));
+            test("400 - thought id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {
+                const nonExistentId = "66e5af35c085e74eax5f6487";
+                return (0, supertest_1.default)(app_1.default)
+                    .patch("/api/thoughts/" + nonExistentId)
+                    .expect(400)
+                    .send({
+                    thoughtMessage: "oops",
+                })
+                    .then(({ body }) => {
+                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
+                });
+            }));
             test("PATCH: 400 - attempting to patch thought._id", () => __awaiter(void 0, void 0, void 0, function* () {
                 const thoughts = yield (0, thoughtsModel_1.fetchThoughts)(testDb);
                 const testThoughtId = thoughts[0]["_id"].toHexString();
@@ -1287,18 +1377,6 @@ describe("/api/thoughts/:thought_id", () => {
                     .expect(400)
                     .send({
                     category: "CHEESE",
-                })
-                    .then(({ body }) => {
-                    expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");
-                });
-            }));
-            test("400 - thought id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {
-                const nonExistentId = "66e5af35c085e74eax5f6487";
-                return (0, supertest_1.default)(app_1.default)
-                    .patch("/api/thoughts/" + nonExistentId)
-                    .expect(400)
-                    .send({
-                    thoughtMessage: "oops",
                 })
                     .then(({ body }) => {
                     expect(body.errorMsg).toBe("400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint");

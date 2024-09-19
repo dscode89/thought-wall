@@ -91,23 +91,23 @@ const amendUserDetails = (db, id, updateDetails) => __awaiter(void 0, void 0, vo
     let validPassword = true;
     let validEmail = true;
     let validRole = true;
-    if (updateDetails.firstName) {
+    if (updateDetails.firstName || updateDetails.firstName === "") {
         validFirstName = /^(?=.*[a-zA-Z])[a-zA-Z\s']{1,12}$/.test(updateDetails.firstName);
     }
-    if (updateDetails.lastName) {
+    if (updateDetails.lastName || updateDetails.lastName === "") {
         validLastName = /^(?=.*[a-zA-Z])[a-zA-Z\s']{1,12}$/.test(updateDetails.lastName);
     }
-    if (updateDetails.preferredName) {
+    if (updateDetails.preferredName || updateDetails.preferredName === "") {
         validPreferredName = /^(?=.*[a-zA-Z])[a-zA-Z\s']{1,12}$/.test(updateDetails.preferredName);
     }
-    if (updateDetails.role) {
+    if (updateDetails.role || updateDetails.role === "") {
         validRole = /^(ADMIN|USER)$/.test(updateDetails.role);
     }
-    if (updateDetails.userPassword) {
+    if (updateDetails.userPassword || updateDetails.userPassword === "") {
         validPassword =
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@£$%^&\*()])[A-Za-z\d!@£$%^&\*()]{8,}$/.test(updateDetails.userPassword);
     }
-    if (updateDetails.email) {
+    if (updateDetails.email || updateDetails.email === "") {
         validEmail = /^[a-zA-Z0-9_\.±]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(updateDetails.email);
     }
     if (!validFirstName ||

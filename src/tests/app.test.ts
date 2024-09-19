@@ -958,6 +958,102 @@ describe("/api/users/:user_id", () => {
             );
           });
       });
+      test("PATCH: 400 - empty firstName(min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes)", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            firstName: "",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("PATCH: 400 - empty lastName(min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes)", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            lastName: "",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("PATCH: 400 - empty preferredName(min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes)", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            preferredName: "  ",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("PATCH: 400 - empty role  - can be either 'ADMIN' or 'USER'", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            role: "",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - empty password(must be at least 8 chars in length, contain: at least one lower case, one uppercase, one number, one of the included special chars (!@£$%^&*()))", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            userPassword: "",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
+      test("POST: 400 - empty email structure", async () => {
+        const users = await fetchUsers(testDb);
+        const testUserId = users[0]["_id"].toHexString();
+
+        return request(app)
+          .patch("/api/users/" + testUserId)
+          .expect(400)
+          .send({
+            email: "",
+          })
+          .then(({ body }) => {
+            expect(body.errorMsg).toBe(
+              "400 - failed validation: please refer to api documentation for correct structure of request body for your endpoint"
+            );
+          });
+      });
     });
   });
 });
