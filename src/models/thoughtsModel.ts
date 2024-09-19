@@ -103,13 +103,13 @@ export const amendThoughtDetails = async (
   let validThoughtMessage = true;
   let validCategory = true;
 
-  if (updateDetails.thoughtMessage) {
+  if (updateDetails.thoughtMessage || updateDetails.thoughtMessage === "") {
     validThoughtMessage = /(?=.*[a-zA-Z]).{10,}$/.test(
       updateDetails.thoughtMessage
     );
   }
 
-  if (updateDetails.category) {
+  if (updateDetails.category || updateDetails.category === "") {
     validCategory = /^(BILLS|HOME|GENERAL)/.test(updateDetails.category);
   }
 
