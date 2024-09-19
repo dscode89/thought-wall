@@ -26,11 +26,9 @@ function createDatabaseConnection() {
         //if are connecting to the dev database
         if (dbName === process.env.DATABASE_NAME) {
             const currentCollections = yield db.listCollections().toArray();
-            console.log(currentCollections);
             const usersCollection = currentCollections.find((collection) => collection.name === "Users");
             const thoughtsCollection = currentCollections.find((collection) => collection.name === "Thoughts");
             if (!usersCollection) {
-                console.log("no users collection");
                 yield db.createCollection("Users", {
                     validator: {
                         $jsonSchema: {
@@ -80,7 +78,6 @@ function createDatabaseConnection() {
                 });
             }
             if (!thoughtsCollection) {
-                console.log("no thoughts collection");
                 yield db.createCollection("Thoughts", {
                     validator: {
                         $jsonSchema: {

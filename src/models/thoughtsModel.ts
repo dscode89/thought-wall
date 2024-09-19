@@ -82,7 +82,7 @@ export const removeThoughtsByUserId = async (db: Db, id: string) => {
   if (!deletedCount) {
     return Promise.reject({
       status: 404,
-      errorMsg: "404 - invalid user id",
+      errorMsg: "404 - There are no thoughts for this userId.",
     });
   }
 };

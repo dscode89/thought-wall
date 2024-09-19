@@ -7,6 +7,6 @@
 - write down all of the possible ways a client can interact and go through integration tests using insomnia with the developer database
 - add a healthcheck endpoint
 - add an endpoint for getting the api documentation
-- add error tests for empty req body values as currently you can update a user with empty values -
-  - do the same for thoughts
-- find out why nothing is returned when trying to update userId when patching a thought
+- add error tests for empty req body values as currently you can update a user with empty values - done
+  - do the same for thoughts - done
+- find out why nothing is returned when trying to update userId when patching a thought - done

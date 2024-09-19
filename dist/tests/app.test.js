@@ -1479,13 +1479,13 @@ describe("/api/thoughts/users/:user_id", () => {
             });
         }));
         describe("ERRORS", () => {
-            test("404 - passed a non-existent userId", () => __awaiter(void 0, void 0, void 0, function* () {
+            test("404 - passed a valid userId that doesn't correspond with any thoughts", () => __awaiter(void 0, void 0, void 0, function* () {
                 const nonExistentId = "66e5af35c085e74eaf5f6487";
                 return (0, supertest_1.default)(app_1.default)
                     .delete("/api/thoughts/users/" + nonExistentId)
                     .expect(404)
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - invalid user id");
+                    expect(body.errorMsg).toBe("404 - There are no thoughts for this userId.");
                 });
             }));
             test("400 - user id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {

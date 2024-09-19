@@ -1725,14 +1725,16 @@ describe("/api/thoughts/users/:user_id", () => {
         });
     });
     describe("ERRORS", () => {
-      test("404 - passed a non-existent userId", async () => {
+      test("404 - passed a valid userId that doesn't correspond with any thoughts", async () => {
         const nonExistentId = "66e5af35c085e74eaf5f6487";
 
         return request(app)
           .delete("/api/thoughts/users/" + nonExistentId)
           .expect(404)
           .then(({ body }) => {
-            expect(body.errorMsg).toBe("404 - invalid user id");
+            expect(body.errorMsg).toBe(
+              "404 - There are no thoughts for this userId."
+            );
           });
       });
       test("400 - user id is not a valid 24 char hex string", async () => {

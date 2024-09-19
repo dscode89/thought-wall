@@ -81,7 +81,7 @@ const removeThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, fun
     if (!deletedCount) {
         return Promise.reject({
             status: 404,
-            errorMsg: "404 - invalid user id",
+            errorMsg: "404 - There are no thoughts for this userId.",
         });
     }
 });
@@ -95,10 +95,10 @@ const amendThoughtDetails = (db, id, updateDetails) => __awaiter(void 0, void 0,
     }
     let validThoughtMessage = true;
     let validCategory = true;
-    if (updateDetails.thoughtMessage) {
+    if (updateDetails.thoughtMessage || updateDetails.thoughtMessage === "") {
         validThoughtMessage = /(?=.*[a-zA-Z]).{10,}$/.test(updateDetails.thoughtMessage);
     }
-    if (updateDetails.category) {
+    if (updateDetails.category || updateDetails.category === "") {
         validCategory = /^(BILLS|HOME|GENERAL)/.test(updateDetails.category);
     }
     if (!validThoughtMessage || !validCategory) {

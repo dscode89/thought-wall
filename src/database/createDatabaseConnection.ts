@@ -20,7 +20,6 @@ export default async function createDatabaseConnection() {
   if (dbName === process.env.DATABASE_NAME) {
     const currentCollections = await db.listCollections().toArray();
 
-    console.log(currentCollections);
     const usersCollection = currentCollections.find(
       (collection) => collection.name === "Users"
     );
@@ -29,7 +28,6 @@ export default async function createDatabaseConnection() {
     );
 
     if (!usersCollection) {
-      console.log("no users collection");
       await db.createCollection("Users", {
         validator: {
           $jsonSchema: {
@@ -80,7 +78,6 @@ export default async function createDatabaseConnection() {
       });
     }
     if (!thoughtsCollection) {
-      console.log("no thoughts collection");
       await db.createCollection("Thoughts", {
         validator: {
           $jsonSchema: {
