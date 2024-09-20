@@ -486,7 +486,7 @@ describe("/api/users/:user_id", () => {
           .expect(404)
           .then(({ body }) => {
             expect(body.errorMsg).toBe(
-              "404 - Could not find any thoughts relating to provided userId"
+              "404 - Could not find any users relating to provided userId"
             );
           });
       });
@@ -552,7 +552,7 @@ describe("/api/users/:user_id", () => {
       } catch (error) {
         expect(error).toEqual({
           errorMsg:
-            "404 - Could not find any thoughts relating to provided userId",
+            "404 - Could not find any users relating to provided userId",
           status: 404,
         });
       }
@@ -566,7 +566,7 @@ describe("/api/users/:user_id", () => {
           .expect(404)
           .then(({ body }) => {
             expect(body.errorMsg).toBe(
-              "404 - Could not find any thoughts relating to provided userId"
+              "404 - Could not find any users relating to provided userId"
             );
           });
       });
@@ -1728,6 +1728,16 @@ describe("/api/thoughts/users/:user_id", () => {
           });
         });
     });
+    test("200 - will return an empty array when passed a valid userId but that user has not posted any thoughts", async () => {
+      const users = await fetchUsers(testDb);
+      const testUserId = users[2]["_id"].toHexString();
+      return request(app)
+        .get("/api/thoughts/users/" + testUserId)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.thoughts).toEqual([]);
+        });
+    });
     describe("ERRORS", () => {
       test("404 - passed a non-existent userId", async () => {
         const nonExistentId = "66e5af35c085e74eaf5f6487";
@@ -1737,7 +1747,7 @@ describe("/api/thoughts/users/:user_id", () => {
           .expect(404)
           .then(({ body }) => {
             expect(body.errorMsg).toBe(
-              "404 - Could not find any thoughts relating to provided userId"
+              "404 - Could not find any users relating to provided userId"
             );
           });
       });
@@ -1780,7 +1790,7 @@ describe("/api/thoughts/users/:user_id", () => {
           .expect(404)
           .then(({ body }) => {
             expect(body.errorMsg).toBe(
-              "404 - Could not find any thoughts relating to provided userId"
+              "404 - Could not find any users relating to provided userId"
             );
           });
       });

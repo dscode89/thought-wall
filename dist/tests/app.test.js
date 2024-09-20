@@ -432,7 +432,7 @@ describe("/api/users/:user_id", () => {
                     .get("/api/users/" + nonExistentId)
                     .expect(404)
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - Could not find any thoughts relating to provided userId");
+                    expect(body.errorMsg).toBe("404 - Could not find any users relating to provided userId");
                 });
             }));
             test("400 - user id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -487,7 +487,7 @@ describe("/api/users/:user_id", () => {
             }
             catch (error) {
                 expect(error).toEqual({
-                    errorMsg: "404 - Could not find any thoughts relating to provided userId",
+                    errorMsg: "404 - Could not find any users relating to provided userId",
                     status: 404,
                 });
             }
@@ -499,7 +499,7 @@ describe("/api/users/:user_id", () => {
                     .delete("/api/users/" + nonExistentId)
                     .expect(404)
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - Could not find any thoughts relating to provided userId");
+                    expect(body.errorMsg).toBe("404 - Could not find any users relating to provided userId");
                 });
             });
             test("400 - user id is not a valid 24 char hex string", () => {
@@ -1475,6 +1475,16 @@ describe("/api/thoughts/users/:user_id", () => {
                 });
             });
         }));
+        test("200 - will return an empty array when passed a valid userId but that user has not posted any thoughts", () => __awaiter(void 0, void 0, void 0, function* () {
+            const users = yield (0, usersModel_1.fetchUsers)(testDb);
+            const testUserId = users[2]["_id"].toHexString();
+            return (0, supertest_1.default)(app_1.default)
+                .get("/api/thoughts/users/" + testUserId)
+                .expect(200)
+                .then(({ body }) => {
+                expect(body.thoughts).toEqual([]);
+            });
+        }));
         describe("ERRORS", () => {
             test("404 - passed a non-existent userId", () => __awaiter(void 0, void 0, void 0, function* () {
                 const nonExistentId = "66e5af35c085e74eaf5f6487";
@@ -1482,7 +1492,7 @@ describe("/api/thoughts/users/:user_id", () => {
                     .get("/api/thoughts/users/" + nonExistentId)
                     .expect(404)
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - Could not find any thoughts relating to provided userId");
+                    expect(body.errorMsg).toBe("404 - Could not find any users relating to provided userId");
                 });
             }));
             test("400 - user id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -1517,7 +1527,7 @@ describe("/api/thoughts/users/:user_id", () => {
                     .delete("/api/thoughts/users/" + nonExistentId)
                     .expect(404)
                     .then(({ body }) => {
-                    expect(body.errorMsg).toBe("404 - Could not find any thoughts relating to provided userId");
+                    expect(body.errorMsg).toBe("404 - Could not find any users relating to provided userId");
                 });
             }));
             test("400 - user id is not a valid 24 char hex string", () => __awaiter(void 0, void 0, void 0, function* () {

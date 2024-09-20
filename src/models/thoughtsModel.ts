@@ -1,5 +1,6 @@
 import { Db, ObjectId } from "mongodb";
 import { Thought, PatchThoughtObjType } from "../types/types";
+import { fetchUserByUserId } from "./usersModel";
 
 export const fetchThoughts = async (db: Db) => {
   const thoughtsCollection = db.collection<Thought>("Thoughts");
@@ -30,10 +31,7 @@ export const fetchThoughtsByUserId = async (db: Db, id: string) => {
     .toArray();
 
   if (!requestedThoughts.length) {
-    return Promise.reject({
-      status: 404,
-      errorMsg: "404 - Could not find any thoughts relating to provided userId",
-    });
+    await fetchUserByUserId(db, id);
   }
   return requestedThoughts;
 };
@@ -80,10 +78,13 @@ export const removeThoughtsByUserId = async (db: Db, id: string) => {
   });
 
   if (!deletedCount) {
-    return Promise.reject({
-      status: 404,
-      errorMsg: "404 - Could not find any thoughts relating to provided userId",
-    });
+    try {
+      await fetchUserByUserId(db, id);
+    } catch (error) {
+      if (error) {
+        return Promise.reject(error);
+      }
+    }
   }
 };
 

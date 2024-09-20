@@ -10,3 +10,4 @@
 - add error tests for empty req body values as currently you can update a user with empty values - done
   - do the same for thoughts - done
 - find out why nothing is returned when trying to update userId when patching a thought - done
+- fix thoughts model fetchThoughtsBYSer Id

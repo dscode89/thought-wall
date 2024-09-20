@@ -32,7 +32,7 @@ const fetchUserByUserId = (db, id) => __awaiter(void 0, void 0, void 0, function
     if (requestedUser === null) {
         return Promise.reject({
             status: 404,
-            errorMsg: "404 - Could not find any thoughts relating to provided userId",
+            errorMsg: "404 - Could not find any users relating to provided userId",
         });
     }
     return requestedUser;

@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.amendThoughtDetails = exports.removeThoughtsByUserId = exports.removeThoughtById = exports.createThought = exports.fetchThoughtsByUserId = exports.fetchThoughtById = exports.fetchThoughts = void 0;
 const mongodb_1 = require("mongodb");
+const usersModel_1 = require("./usersModel");
 const fetchThoughts = (db) => __awaiter(void 0, void 0, void 0, function* () {
     const thoughtsCollection = db.collection("Thoughts");
     const currentThoughts = yield thoughtsCollection.find().toArray();
@@ -37,10 +38,7 @@ const fetchThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, func
         .find({ userId: new mongodb_1.ObjectId(id) })
         .toArray();
     if (!requestedThoughts.length) {
-        return Promise.reject({
-            status: 404,
-            errorMsg: "404 - Could not find any thoughts relating to provided userId",
-        });
+        yield (0, usersModel_1.fetchUserByUserId)(db, id);
     }
     return requestedThoughts;
 });
@@ -79,10 +77,14 @@ const removeThoughtsByUserId = (db, id) => __awaiter(void 0, void 0, void 0, fun
         userId: new mongodb_1.ObjectId(id),
     });
     if (!deletedCount) {
-        return Promise.reject({
-            status: 404,
-            errorMsg: "404 - Could not find any thoughts relating to provided userId",
-        });
+        try {
+            yield (0, usersModel_1.fetchUserByUserId)(db, id);
+        }
+        catch (error) {
+            if (error) {
+                return Promise.reject(error);
+            }
+        }
     }
 });
 exports.removeThoughtsByUserId = removeThoughtsByUserId;
