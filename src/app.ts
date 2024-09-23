@@ -20,11 +20,16 @@ import {
   customErrorHandler,
   mondoDbErrors,
 } from "./errors/errors";
+import endpointData from "./api.json";
 
 const app = express();
 
 app.use(express.json());
 
+app.get("/api/home", (req, res, next) => {
+  console.log("in here");
+  res.status(200).send({ endpoints: endpointData });
+});
 //users
 app.get("/api/users", getUsers);
 app.post("/api/users", postUser);

@@ -3,7 +3,7 @@ import request from "supertest";
 import app from "../app";
 import { User, Thought } from "../types/types";
 import createDatabaseConnection from "../database/createDatabaseConnection";
-import { Db, MongoClient, ObjectId } from "mongodb";
+import { Db, MongoClient } from "mongodb";
 import { fetchUsers, removeUser } from "../models/usersModel";
 import {
   createThought,
@@ -11,6 +11,7 @@ import {
   fetchThoughtsByUserId,
 } from "../models/thoughtsModel";
 import bcrypt from "bcryptjs";
+import endpointData from "../api.json";
 
 let testDb: Db;
 let testDbClient: MongoClient;
@@ -30,6 +31,17 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await testDbClient.close();
+});
+
+describe("/api/home", () => {
+  test("will return information about all of the available data on the API via each endpoint", () => {
+    return request(app)
+      .get("/api/home")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.endpoints).toEqual(endpointData);
+      });
+  });
 });
 
 describe("/api/users", () => {

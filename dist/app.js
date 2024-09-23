@@ -7,8 +7,13 @@ const express_1 = __importDefault(require("express"));
 const usersController_1 = require("./controllers/usersController");
 const thoughtsController_1 = require("./controllers/thoughtsController");
 const errors_1 = require("./errors/errors");
+const api_json_1 = __importDefault(require("./api.json"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
+app.get("/api/home", (req, res, next) => {
+    console.log("in here");
+    res.status(200).send({ endpoints: api_json_1.default });
+});
 //users
 app.get("/api/users", usersController_1.getUsers);
 app.post("/api/users", usersController_1.postUser);

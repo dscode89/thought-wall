@@ -19,6 +19,7 @@ const createDatabaseConnection_1 = __importDefault(require("../database/createDa
 const usersModel_1 = require("../models/usersModel");
 const thoughtsModel_1 = require("../models/thoughtsModel");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const api_json_1 = __importDefault(require("../api.json"));
 let testDb;
 let testDbClient;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
@@ -33,6 +34,16 @@ beforeEach(() => __awaiter(void 0, void 0, void 0, function* () {
 afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
     yield testDbClient.close();
 }));
+describe("/api/home", () => {
+    test("will return information about all of the available data on the API via each endpoint", () => {
+        return (0, supertest_1.default)(app_1.default)
+            .get("/api/home")
+            .expect(200)
+            .then(({ body }) => {
+            expect(body.endpoints).toEqual(api_json_1.default);
+        });
+    });
+});
 describe("/api/users", () => {
     describe("GET", () => {
         test("GET: 200 - will return object containing a list of users", () => {
