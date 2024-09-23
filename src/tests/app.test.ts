@@ -39,7 +39,7 @@ describe("/api/home", () => {
       .get("/api/home")
       .expect(200)
       .then(({ body }) => {
-        expect(body.endpoints).toEqual(endpointData);
+        expect(body.apiInfo).toEqual(endpointData);
       });
   });
 });

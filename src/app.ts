@@ -28,7 +28,7 @@ app.use(express.json());
 
 app.get("/api/home", (req, res, next) => {
   console.log("in here");
-  res.status(200).send({ endpoints: endpointData });
+  res.status(200).send({ apiInfo: endpointData });
 });
 //users
 app.get("/api/users", getUsers);

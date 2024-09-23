@@ -12,7 +12,7 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.get("/api/home", (req, res, next) => {
     console.log("in here");
-    res.status(200).send({ endpoints: api_json_1.default });
+    res.status(200).send({ apiInfo: api_json_1.default });
 });
 //users
 app.get("/api/users", usersController_1.getUsers);

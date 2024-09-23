@@ -40,7 +40,7 @@ describe("/api/home", () => {
             .get("/api/home")
             .expect(200)
             .then(({ body }) => {
-            expect(body.endpoints).toEqual(api_json_1.default);
+            expect(body.apiInfo).toEqual(api_json_1.default);
         });
     });
 });
