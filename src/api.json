@@ -46,7 +46,8 @@
         "queries": "There are no queries currently available for this endpoint.",
         "requirements": {
           ":user_id": "Must be a 24 char hex string."
-        }
+        },
+        "possibleErrors": [404, 400]
       },
       "/api/thoughts/:thought_id": {
         "statusCode": 200,
@@ -61,7 +62,8 @@
         "queries": "There are no queries currently available for this endpoint.",
         "requirements": {
           ":thought_id": "Must be a 24 char hex string."
-        }
+        },
+        "possibleErrors": [404, 400]
       },
       "/api/thoughts/users/:user_id": {
         "statusCode": 200,
@@ -78,7 +80,8 @@
         "queries": "There are no queries currently available for this endpoint.",
         "requirements": {
           ":user_id": "Must be a 24 char hex string."
-        }
+        },
+        "possibleErrors": [404, 400]
       }
     },
     "POST": {
