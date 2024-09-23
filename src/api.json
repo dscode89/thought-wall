@@ -169,7 +169,7 @@
       "endpoints": {
         "/api/users/:user_id": {
           "statusCode": 200,
-          "returns": "The is no repsonse body for this request. It will delete a requested user.",
+          "returns": "This endpoint will return an updated user.",
           "dataStructure": {
             "_id": "24 char hex string",
             "firstName": "string",
@@ -181,18 +181,18 @@
           },
           "queries": "There are no queries currently available for this endpoint.",
           "requirements": {
-            "firstName": "Min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes",
-            "lastName": "Min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes",
-            "preferredName": "Min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes",
-            "role": "This can be a string of one of the following two values. 'ADMIN'| 'USER'",
-            "userPassword": "Must be at least 8 chars in length and contain: at least one lower case, one uppercase, one number, one of the following special chars (!@£$%^&*()))",
-            "email": "Must be a valid email structure - 'test@test.com'"
+            "firstName": "If provided, Min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes",
+            "lastName": "If provided, Min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes",
+            "preferredName": "If provided, Min 1 char, max 12 chars, no numbers or special chars. Can contain spaces and apostrophes",
+            "role": "If provided, This can be a string of one of the following two values. 'ADMIN'| 'USER'",
+            "userPassword": "If provided, Must be at least 8 chars in length and contain: at least one lower case, one uppercase, one number, one of the following special chars (!@£$%^&*()))",
+            "email": "If provided, Must be a valid email structure - 'test@test.com'"
           },
           "possibleErrors": [404, 400]
         },
         "/api/thoughts/:thought_id": {
           "statusCode": 200,
-          "returns": "The is no repsonse body for this request.",
+          "returns": "This endpoint will return an updated thought.",
           "dataStructure": {
             "_id": "24 char hex string",
             "userId": "24 char hex string",
@@ -202,9 +202,9 @@
           },
           "queries": "There are no queries currently available for this endpoint.",
           "requirements": {
-            "thoughtMessage": "Must be at least 10 chars and contain a lowercase or uppercase letter.",
-            "isPriority": "This must be a boolean.",
-            "category": "This can be a string of one of the following three values. 'BILLS' | 'HOME' | 'GENERAL'."
+            "thoughtMessage": "If provided, must be at least 10 chars and contain a lowercase or uppercase letter.",
+            "isPriority": "If provided, must be a boolean.",
+            "category": "If provided, this can be a string of one of the following three values. 'BILLS' | 'HOME' | 'GENERAL'."
           },
           "possibleErrors": [404, 400]
         }
