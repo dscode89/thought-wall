@@ -1,5 +1,5 @@
-import app from "./src/app";
-import createDatabaseConnection from "./src/database/createDatabaseConnection";
+import app from "./app";
+import createDatabaseConnection from "./database/createDatabaseConnection";
 
 createDatabaseConnection()
   .then((mongoDb) => {
